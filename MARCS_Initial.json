@@ -1,0 +1,5 @@
+{
+	"log_filename":"AR_Log",
+	"WL_filename":"WaitingList_Log",
+	"Initial_ARFF_filename":"Initial_ARFF.arff"
+}
