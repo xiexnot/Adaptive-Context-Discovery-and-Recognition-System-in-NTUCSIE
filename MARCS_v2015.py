@@ -18,6 +18,7 @@ import os
 import sys
 from pca import pca_raw_cov as pca
 import copy
+import json
 
 """
 ----------------------------------------------
@@ -47,12 +48,23 @@ def find_max(x):
 	
 def InputData():
 	global d
+	global eigenvalue_sum_threshold, Pinit
 	if sys.argv[1].__len__() == 0:
-		print "python [python's filename] [dataset's filename] [sum] [0:median 1:minimum]"
+		print "python [python's filename] [json's filename]"
 		exit()
+	FILE = open(sys.argv[1],"rU")
+	rawdata = FILE.read()
+	decoded = json.loads(rawdata)
+	print rawdata	
+	print decoded['dataset_filename']
+	print decoded['eigenvalue_sum_threshold']
+	print decoded['Pinit']
 	print "start read dataset"
-	d = read_dataset(sys.argv[1],'\t')
+	d = read_dataset(decoded['dataset_filename'],'\t')
 	print "end of read_dataset"
+	FILE.close()
+	Pinit = int(decoded['Pinit'])
+	eigenvalue_sum_threshold = float(decoded['eigenvalue_sum_threshold'])
 	return 0
 	
 """
@@ -78,6 +90,7 @@ def ConvertDataFormat(d):
 	print "start to convert to float"
 	try:
 		d = [[float(j) for j in i] for i in d]
+		print 'start to convert to float...done...'
 	except:
 		for i in range(len(d)):
 			for j in range(len(d[i])):
@@ -86,7 +99,7 @@ def ConvertDataFormat(d):
 				except:
 					print i,"\t",j,"\t",d[i][j]
 					return 1
-	return 0
+	return d
 
 """
 ----------------------------------------------
@@ -110,7 +123,7 @@ def DatasetNormalization(d):
 			dt[i] = [0 for j in dt[i]]
 	print "start to zip"
 	d = zip(*dt)
-	return 0
+	return d
 	
 """
 ----------------------------------------------
@@ -121,7 +134,7 @@ def DatasetNormalization(d):
 ----------------------------------------------
 """
 	
-def DimensionalityReduction(d, d_eigenvalue, d_eigenvector):
+def DimensionalityReduction(d):
 	print "start to PCA"
 	d_pca = pca(np.array(d))
 	d_eigenvalue = [i[0] for i in d_pca]
@@ -145,7 +158,7 @@ def DimensionalityReduction(d, d_eigenvalue, d_eigenvector):
 		d_eigenvalue_sum += d_eigenvalue[i]/d_eigenvalue_total
 		print >> eigenvalue_output, d_eigenvalue[i]/d_eigenvalue_total, "\t", d_eigenvalue_sum
 	eigenvalue_output.close()
-	return 0
+	return d_eigenvalue, d_eigenvector
 	
 """
 ----------------------------------------------
@@ -168,15 +181,17 @@ def PrintClusteringResult(c1):
 	
 #========================================
 
+
+Pinit = -1
+eigenvalue_sum_threshold = 0.0
 InputData()	
 
-if ConvertDataFormat() == 1:
-	exit()
+d = ConvertDataFormat(d)
 	
-DatasetNormalization()
-d_eigenvalue = []
-d_eigenvector = []
-DimensionalityReduction(d, d_eigenvalue, d_eigenvector)
+print type(d[0][0])
+d = DatasetNormalization(d)
+
+d_eigenvalue, d_eigenvector = DimensionalityReduction(d)
 
 C=[]
 counter = []
@@ -190,7 +205,7 @@ for component in range(len(d_eigenvector)):
 	print "component = ",component
 	d_eigenvalue_sum += d_eigenvalue[component]/d_eigenvalue_total
 	print "d_eigenvalue_sum = ",d_eigenvalue_sum
-	if d_eigenvalue_sum > float(sys.argv[2]):
+	if d_eigenvalue_sum > eigenvalue_sum_threshold:
 		pass
 	else:
 		continue
@@ -203,8 +218,7 @@ for component in range(len(d_eigenvector)):
 		d_transf = [[round(j,1) for j in i] for i in d_transf]
 	numeric_list = range(0,component+1)
 	nominal_list = range(0,0)
-	Pinit = int(sys.argv[3])
-
+	
 	c1,c2,data_ch,data_cluster,S = DAP(d_transf,numeric_list,nominal_list,Pinit)
 	C.append(c1)
 	#print "max_cluster_number = ",find_max(c1)

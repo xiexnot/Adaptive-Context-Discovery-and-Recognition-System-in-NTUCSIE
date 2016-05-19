@@ -9,6 +9,7 @@ import os
 import sys
 import math
 import json
+import weka.core.jvm as jvm
 
 """
 ----------------------------------------------

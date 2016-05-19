@@ -1,0 +1,5 @@
+{
+	"dataset_filename":"dataset/BL313_Dataset_201411/s_dataset",
+	"eigenvalue_sum_threshold":"0.9",
+	"Pinit":"1"
+}
