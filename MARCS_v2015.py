@@ -19,6 +19,7 @@ import sys
 from pca import pca_raw_cov as pca
 import copy
 import json
+import copy
 
 """
 ----------------------------------------------
@@ -49,6 +50,7 @@ def find_max(x):
 def InputData():
 	global d
 	global eigenvalue_sum_threshold, Pinit
+	global eigenvalue_filename, eigenvector_filename, cluster_filename
 	if sys.argv[1].__len__() == 0:
 		print "python [python's filename] [json's filename]"
 		exit()
@@ -59,12 +61,18 @@ def InputData():
 	print decoded['dataset_filename']
 	print decoded['eigenvalue_sum_threshold']
 	print decoded['Pinit']
+	print decoded['eigenvalue_filename']
+	print decoded['eigenvector_filename']
+	print decoded['cluster_filename']
 	print "start read dataset"
 	d = read_dataset(decoded['dataset_filename'],'\t')
 	print "end of read_dataset"
 	FILE.close()
 	Pinit = int(decoded['Pinit'])
 	eigenvalue_sum_threshold = float(decoded['eigenvalue_sum_threshold'])
+	eigenvector_filename = copy.deepcopy(decoded['eigenvector_filename'])
+	eigenvalue_filename = copy.deepcopy(decoded['eigenvalue_filename'])
+	cluster_filename = copy.deepcopy(decoded['cluster_filename'])
 	return 0
 	
 """
@@ -140,7 +148,8 @@ def DimensionalityReduction(d):
 	d_eigenvalue = [i[0] for i in d_pca]
 	d_eigenvector = [i[1] for i in d_pca]
 
-	eigenvector_output = open('eigenvector','w')
+	global eigenvector_filename
+	eigenvector_output = open(eigenvector_filename,'w')
 	for i in range(len(d_eigenvector)):
 		for j in range(len(d_eigenvector[i])):
 			eigenvector_output.write(str(d_eigenvector[i][j])+"\t")
@@ -149,7 +158,8 @@ def DimensionalityReduction(d):
 	
 	global d_eigenvalue_sum, d_eigenvalue_total
 
-	eigenvalue_output = open('eigenvalue','w')
+	global eigenvalue_filename
+	eigenvalue_output = open(eigenvalue_filename,'w')
 	d_eigenvalue_total = 0.0
 	for i in range(len(d_eigenvalue)):
 		d_eigenvalue_total += d_eigenvalue[i]
@@ -170,8 +180,9 @@ def DimensionalityReduction(d):
 """
 	
 def PrintClusteringResult(c1):
+	global cluster_filename
 	print "Printing Cluster(DAP)"
-	f = open('cluster(DAP)','w')
+	f = open(cluster_filename,'w')
 	for i in range(len(c1)):
 		if i!=0:
 			f.write('\n')

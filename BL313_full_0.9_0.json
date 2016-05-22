@@ -1,5 +1,8 @@
 {
 	"dataset_filename":"dataset/BL313_Dataset_201411/s_dataset",
-	"eigenvalue_sum_threshold":"0.9",
-	"Pinit":"0"
+	"eigenvalue_sum_threshold":0.9,
+	"Pinit":0,
+	"eigenvalue_filename":"eigenvalue_BL313_full_0.9_0",
+	"eigenvector_filename":"eigenvector_BL313_full_0.9_0",
+	"cluster_filename":"cluster_BL313_full_0.9_0"
 }
