@@ -1,0 +1,6 @@
+{
+	"totaldata_filename":"dataset/BL313_Dataset_201411/s_dataset",
+	"totalclustering_filename":"cluster_BL313_full_0.9_0",
+	"configure_filename":"dataset/BL313_Dataset_201411/s_dataset_configure",
+	"ARFF_output_filename":"BL313_full_initial.arff"
+}

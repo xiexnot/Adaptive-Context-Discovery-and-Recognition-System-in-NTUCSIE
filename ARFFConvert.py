@@ -22,10 +22,13 @@ import json
 ----------------------------------------------
 """
 
-def Instance2ARFF(data, label):
+def Instance2ARFF(data, label, configure):
 	result = ""
 	for i in range(len(data)):
-		result = result + str(data[i]) + ','
+		if configure[i][1] == 'real':
+			result = result + str(data[i]) + ','
+		elif configure[i][1] == 'integer':
+			result = result + str(int(data[i])) + ','
 	result += label
 	return result
 
@@ -38,6 +41,7 @@ def Instance2ARFF(data, label):
 """
 
 def DataPreprocessing(totaldata):
+	print "Data Preprocessing"
 	for i in range(len(totaldata)):
 		for j in range(len(totaldata[i])):
 			if 'on' in totaldata[i][j]:
@@ -46,7 +50,10 @@ def DataPreprocessing(totaldata):
 				totaldata[i][j] = '0'
 			elif 'stand' in totaldata[i][j]:
 				totaldata[i][j] = '0.1'
-	return 0
+	for i in range(len(totaldata)):
+		for j in range(len(totaldata[i])):
+			totaldata[i][j] = float(totaldata[i][j])
+	return totaldata
 
 """
 ----------------------------------------------
@@ -56,32 +63,34 @@ def DataPreprocessing(totaldata):
 ----------------------------------------------
 """
 
-def InputData(filename, totaldata, totallabel, configure):
+def InputData(filename):
 	FILE = open(filename,'rU')
 	rawdata = FILE.read()
 	decoded = json.loads(rawdata)
 	FILE.close()
 	print decoded["totaldata_filename"]
-	print decoded["totallabel_filename"]
+	print decoded["totalclustering_filename"]
 	print decoded["configure_filename"]
-	print decoded["ARFF_filename"]
+	print decoded["ARFF_output_filename"]
 	#read data
 	totaldata = read_dataset(decoded["totaldata_filename"],"\t")
 	#read label
-	FILE_label = open(decoded["totallabel_filename"],'rU')
+	FILE_label = open(decoded["totalclustering_filename"],'rU')
 	totallabel = FILE_label.read()
 	totallabel = totallabel.split('\n')
-	if len(totallabel[totallabel.__len__()]) == 0:
+	if len(totallabel[totallabel.__len__()-1]) == 0:
 		totallabel = totallabel[:-1]
 	FILE_label.close()
 	#read configure in each parameter
 	FILE_configure = open(decoded["configure_filename"],'rU')
 	configure = FILE_configure.read()
 	configure = configure.split('\n')
-	if len(configure[configure.__len__()]) == 0:
+	if len(configure[configure.__len__()-1]) == 0:
 		configure = configure[:-1]
+	for i in range(configure.__len__()):
+		configure[i] = configure[i].split('\t')
 	FILE_configure.close()
-	return 0, decoded["ARFF_output_filename"]
+	return 0, decoded["ARFF_output_filename"], totaldata, totallabel, configure
 
 """
 ----------------------------------------------
@@ -92,30 +101,29 @@ def InputData(filename, totaldata, totallabel, configure):
 """
 
 def ARFFHeaderPrint(ARFF_Output, configure):
-
-	ARFF_Output.write('@RELATION\tinitial\tmodel\n')
+	print configure
+	ARFF_Output.write('@RELATION\tinitial_model\n')
 	for i in range(len(configure)):
-		ARFF_Output.write('@ATTRIBUTE\t'+configure[i]+'\t'+'REAL\n')
+		#print i
+		ARFF_Output.write('@ATTRIBUTE\t'+configure[i][0]+'\t'+configure[i][1]+'\n')
 	ARFF_Output.write('@ATTRIBUTE\tclass\tinteger\n')
 	ARFF_Output.write('@DATA\n')
-	
 	return 0
 	
 totaldata = []
 totallabel = []
-configure = []
 
-try:
-	status, ARFF_output_filename = InputData(sys.argv[1], totaldata, totallabel, configure)
-	DataPreprocessing(totaldata)
-	ARFF_Output = open(ARFF_output_filename,'w')
-	ARFFHeaderPrint(ARFF_Output, configure)
-	for i in range(len(totaldata)):
-		ARFF_Output.write(Instance2ARFF(totaldata[i], label[i]))
-		ARFF_Output.write('\n')
-		pass
-	ARFF_Output.close()
-except:
-	exit()
+status, ARFF_output_filename, totaldata, totallabel, configure = InputData(sys.argv[1])
+totaldata = DataPreprocessing(totaldata)
+print "ARFF_output_filename = ", ARFF_output_filename
+ARFF_Output = open(ARFF_output_filename,'w')
+ARFFHeaderPrint(ARFF_Output, configure)
+for i in range(len(totaldata)):
+	ARFF_Output.write(Instance2ARFF(totaldata[i], totallabel[i], configure))
+	ARFF_Output.write('\n')
+	pass
+ARFF_Output.close()
+print "Finally..."
+
 	
 

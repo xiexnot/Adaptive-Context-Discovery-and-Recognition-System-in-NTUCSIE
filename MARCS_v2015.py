@@ -25,7 +25,7 @@ import copy
 ----------------------------------------------
 	find_max
 	Description:
-	Hints:	Now it's useless.
+	Hints:	
 	Input:
 	Output:
 ----------------------------------------------
@@ -236,3 +236,4 @@ for component in range(len(d_eigenvector)):
 	break
 
 PrintClusteringResult(c1)
+print "max = ",find_max(c1)
