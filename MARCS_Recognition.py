@@ -37,6 +37,19 @@ def PrintInstanceWL(instance, WL_filename):
 	FILE.close()
 	return 0
 
+def read_json(filename):
+	FILE = open(filename,'rU')
+	rawdata = FILE.read()
+	decoded = json.dumps(rawdata)
+	FILE.close()
+	return decoded
+
+def print_json_to_file(filename, dict_data):
+	FILE = open(filename,'w')
+	FILE.write(dict_data)
+	FILE.close()
+	return 0
+
 """
 ----------------------------------------------
 	ActivityRecognition
@@ -46,11 +59,15 @@ def PrintInstanceWL(instance, WL_filename):
 ----------------------------------------------
 """
 
-def ActivityRecognition(AR_filename, WL_filename):
+def ActivityRecognition(AR_filename, WL_filename, Semantic_filename):
 	pass
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
+	#read the semantic meaning from extrenal file
+	Semantic_Meaning = read_json(Semantic_filename)
+	
 	is_unfamilar_pattern = -1
+	new_semantic_meaning = False
 	for i in range(len(AR_instance)):
 		Distribution = ModelPossibilityDistribution(AR_instance[i])
 		is_familar_pattern = isFamilarPattern(Distribution)
@@ -58,7 +75,19 @@ def ActivityRecognition(AR_filename, WL_filename):
 			print "Add a new instance into WaitingList..."
 			PrintInstanceWL(AR_instance[i],WL_filename)
 		else:
-			pass
+			if Semantic_Meaning.has_key(str(is_familar_pattern)) == True
+			#if str(is_familar_pattern) in Semantic_Meaning:
+				#find propable semantic meaning
+				print "AR Result: " + Semantic_Meaning[str(is_familar_pattern)]
+			else:
+				#cannot find proper semantic mearning
+				new_semantic_meaning = True
+				semantic_label = raw_input('please enter the Semantic Meaning for the context')
+				Semantic_Meaning[str(is_familar_pattern)] = semantic_label
+
+	if new_semantic_meaning == True:
+		print_json_to_file(Semantic_filename, Semantic_Meaning)
+
 	return 0
 
 """
@@ -80,12 +109,13 @@ def Initialization(filename, Initial_ARFF):
 	Initial_ARFF = Initial_ARFF_FILE.read()
 	Initial_ARFF_FILE.close() 
 	FILE.close()
-	return decoded['log_filename'], decoded['WL_filename']
+	return decoded['log_filename'], decoded['WL_filename'], decoded['Semantic_filename']
 
 Initial_ARFF = []
-log_filename, WL_filename = Initialization(sys.argv[1], Initial_ARFF)
+log_filename, WL_filename, Semantic_filename = Initialization(sys.argv[1], Initial_ARFF)
 print 'log_filename = ',log_filename
 print 'WaitingList_filename = ', WL_filename
+print 'Semantic_filename = ', Semantic_filename
 exit()
 
 while True:
@@ -100,7 +130,7 @@ while True:
 
 	if command[0] == 'AR' or command[0] == 'ar':
 		print "MARCS Activity Recognition...loading..."
-		ActivityRecognition(command[1], WL_filename)
+		ActivityRecognition(command[1], WL_filename, Semantic_filename)
 		print "MARCS Activity Recognition...finished."
 		pass
 	pass
