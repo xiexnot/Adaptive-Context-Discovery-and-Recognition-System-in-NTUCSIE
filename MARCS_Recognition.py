@@ -36,7 +36,8 @@ def ModelPossibilityDistribution(instance):
 ----------------------------------------------
 """
 
-global FamilarThreshold = 0.95
+FamilarThreshold = 0.95
+
 def isFamilarPattern(Distribution, Semantic_Meaning):
 	#not finished yet.
 	target = []
@@ -113,7 +114,7 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename):
 			print "Add a new instance into WaitingList..."
 			PrintInstanceWL(AR_instance[i],WL_filename)
 		else:
-			if Semantic_Meaning.has_key(str(is_familar_pattern)) == True
+			if Semantic_Meaning.has_key(str(is_familar_pattern)) == True:
 			#if str(is_familar_pattern) in Semantic_Meaning:
 				#find propable semantic meaning
 				print "AR Result: " + Semantic_Meaning[str(is_familar_pattern)]
@@ -140,26 +141,26 @@ def Initialization(filename, Initial_ARFF):
 	
 	FILE = open(filename,'rU')
 	rawdata = FILE.read()
-	print rawdata
+	#print rawdata
 	decoded = json.loads(rawdata)
 	print decoded['Initial_ARFF_filename']
 	Initial_ARFF_FILE = open(decoded['Initial_ARFF_filename'],'rU')
 	Initial_ARFF = Initial_ARFF_FILE.read()
 	Initial_ARFF_FILE.close() 
 	FILE.close()
-	return decoded['log_filename'], decoded['WL_filename'], decoded['Semantic_filename']
+	return decoded['log_filename'], decoded['WL_filename'], decoded['Semantic_filename'], decoded['ARFF_header_filename']
 
 def main():
 
 	Initial_ARFF = []
-	log_filename, WL_filename, Semantic_filename = Initialization(sys.argv[1], Initial_ARFF)
+	log_filename, WL_filename, Semantic_filename, ARFF_header_filename = Initialization(sys.argv[1], Initial_ARFF)
 	print 'log_filename = ',log_filename
 	print 'WaitingList_filename = ', WL_filename
 	print 'Semantic_filename = ', Semantic_filename
-	exit()
+	print "ARFF_header_filename = ", ARFF_header_filename
 
 	while True:
-		command = raw_input('\nADD:ADD [ARFF\'s filename]\n AR:AR [raw data of dataset\' filename]\nplease enter the command:')
+		command = raw_input('\nADD:ADD [ARFF\'s filename]\nAR:AR [raw data of dataset\' filename]\nplease enter the command:')
 		print 'command: '+command
 		command = command.split(' ')
 		if command[0] == 'ADD' or command[0] == 'Add':
@@ -178,10 +179,6 @@ def main():
 	return 0
 
 if __name__=="__main__":
-	try:
-		jvm.start()
-		main()
-	except Exception,e:
-		print (traceback.format_exec())
-	finally:
-		jvm.stop()
+	jvm.start()
+	main()
+	jvm.stop()

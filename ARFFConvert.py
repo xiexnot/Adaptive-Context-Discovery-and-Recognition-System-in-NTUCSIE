@@ -72,6 +72,7 @@ def InputData(filename):
 	print decoded["totalclustering_filename"]
 	print decoded["configure_filename"]
 	print decoded["ARFF_output_filename"]
+	print decoded["ARFF_header_filename"]
 	#read data
 	totaldata = read_dataset(decoded["totaldata_filename"],"\t")
 	#read label
@@ -90,7 +91,7 @@ def InputData(filename):
 	for i in range(configure.__len__()):
 		configure[i] = configure[i].split('\t')
 	FILE_configure.close()
-	return 0, decoded["ARFF_output_filename"], totaldata, totallabel, configure
+	return 0, decoded["ARFF_output_filename"], decoded["ARFF_header_filename"], totaldata, totallabel, configure
 
 """
 ----------------------------------------------
@@ -113,16 +114,19 @@ def ARFFHeaderPrint(ARFF_Output, configure):
 totaldata = []
 totallabel = []
 
-status, ARFF_output_filename, totaldata, totallabel, configure = InputData(sys.argv[1])
+status, ARFF_output_filename, ARFF_header_filename, totaldata, totallabel, configure = InputData(sys.argv[1])
 totaldata = DataPreprocessing(totaldata)
 print "ARFF_output_filename = ", ARFF_output_filename
 ARFF_Output = open(ARFF_output_filename,'w')
+ARFF_Output_Header = open(ARFF_header_filename,'w')
 ARFFHeaderPrint(ARFF_Output, configure)
+ARFFHeaderPrint(ARFF_Output_Header, configure)
 for i in range(len(totaldata)):
 	ARFF_Output.write(Instance2ARFF(totaldata[i], totallabel[i], configure))
 	ARFF_Output.write('\n')
 	pass
 ARFF_Output.close()
+ARFF_Output_Header.close()
 print "Finally..."
 
 	

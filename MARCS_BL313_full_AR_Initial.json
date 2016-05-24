@@ -1,0 +1,7 @@
+{
+	"log_filename":"AR_Log",
+	"WL_filename":"WaitingList_Log",
+	"Initial_ARFF_filename":"BL313_full_initial.arff",
+	"Semantic_filename":"Semantic_Meaning_Log",
+	"ARFF_header_filename":"BL313_full_initial(header).arff"
+}
