@@ -21,7 +21,6 @@ import weka.plot.graph as plot_graph
 import weka.core.types as types
 
 
-
 def ModelPossibilityDistribution(instance):
 	
 	return 0
@@ -82,30 +81,7 @@ def print_json_to_file(filename, dict_data):
 	FILE.write(dict_data)
 	FILE.close()
 	return 0
-"""
-def ConvertInstance2ARFF(AR_instance, ARFF_header_filename, configure):
-	#print data to temporary external file
-	FILE = open(ARFF_header_filename, 'rU')
-	header = FILE.read()
-	FILE.close()
-	FILE = open('MARCS_AR_temporary_log','w')
-	FILE.write(header)
-	for i in range(len(AR_instance)):
-		for j in range(len(AR_instance[i])):
-			if 'on' in AR_instance[i][j]:
-				AR_instance[i][j] = '1'
-			elif 'off' in AR_instance[i][j]:
-				AR_instance[i][j] = '0'
-			elif 'stand' in AR_instance[i][j]:
-				AR_instance[i][j] = '0.1'
-			if configure[j][1] == integer:
-			elif
-	
-	
-	FILE.close()
-	loader = Loader(classname="weka.core.converters.ArffLoader")
-	return 0
-"""
+
 """
 ----------------------------------------------
 	ActivityRecognition
@@ -115,11 +91,10 @@ def ConvertInstance2ARFF(AR_instance, ARFF_header_filename, configure):
 ----------------------------------------------
 """
 
-def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, ARFF_header_filename, configure):
+def ActivityRecognition(AR_filename, WL_filename, Semantic_filename):
 	pass
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
-	AR_instance_ARFF = ConvertInstance2ARFF(AR_instance, ARFF_header_filename, configure)
 	#read the semantic meaning from extrenal file
 	Semantic_Meaning = read_json(Semantic_filename)
 
@@ -154,52 +129,85 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, ARFF_header
 ----------------------------------------------
 """
 
-def Initialization(filename, Initial_ARFF):
+def Initialization(filename):
 	
 	FILE = open(filename,'rU')
 	rawdata = FILE.read()
 	FILE.close()
-	#print rawdata
 	decoded = json.loads(rawdata)
-	print decoded['Initial_ARFF_filename']
-	print decoded['configure_filename']
+	print "Initial_Instance_filename", decoded['Initial_Instance_filename']
+	# initial models' instance
+	print "Initial_Clustering_filename", decoded['Initial_Clustering_filename']
+	# initial models's clustering result
 
-	Initial_ARFF_FILE = open(decoded['Initial_ARFF_filename'],'rU')
-	Initial_ARFF = Initial_ARFF_FILE.read()
-	Initial_ARFF_FILE.close() 
-
-	FILE = open(decoded['configure_filename'],'rU')
-	configure = FILE.read()
-	configure = configure.split('\n')
-	for i in range(configure.__len__()):
-		configure[i] = configure[i].split('\t')
+	#read the instance from initial model
+	FILE = open(decoded['Initial_Instance_filename'],'rU')
+	Instance = FILE.read()
+	Instance = Instancel.split('\n')
+	while len(Instance[Instance.__len__()-1]) == 0:
+		Instance = Instance[:-1]
+	for i in range(Instance.__len__()):
+		Instance[i] = Instance[i].split('\t')
+		for j in range(len(Instance[i])):
+			if 'on' in Instance[i][j]:
+				Instance[i][j] = '1'
+			elif 'off' in Instance[i][j]:
+				Instance[i][j] = '0'
+			elif 'stand' in Instance[i][j]:
+				Instance[i][j] = '0.1'
 	FILE.close()
-	
-	return decoded['log_filename'], decoded['WL_filename'], decoded['Semantic_filename'], decoded['ARFF_header_filename'], configure
 
+	#read the clustering result from initial instances
+	FILE = open(decoded['Initial_Clustering_filename'],'rU')
+	Clustering = FILE.read()
+	Clustering = Clustering.split('\n')
+	while len(Clustering[Clustering.__len__()-1]) == 0:
+		Clustering = Clustering[:-1]
+	FILE.close()
+
+	return decoded["log_filename"], decoded["WL_filename"], decoded["Semantic_filename"], Instance , Clustering
+
+def AddModelInstance(instance_filename, clustering_filename, Instance, Clustering):
+	
+	AdditionInstance = read_dataset(instance_filename,'\t')
+
+	FILE = open(clustering_filename,'rU')
+	AdditionClustering = FILE.read()
+	AdditionClustering = AdditionClustering.split('\n')
+	while len(AdditionClustering[AdditionClustering.__len__()-1]) == 0:
+		AdditionClustering = AdditionClustering[:-1]
+	FILE.close()
+
+	Instance = Instance + AdditionInstance
+	Clustering = Clustering + AdditionClustering
+	return Instance, Clustering
+	
 def main():
 
-	Initial_ARFF = []
-	log_filename, WL_filename, Semantic_filename, ARFF_header_filename, configure = Initialization(sys.argv[1], Initial_ARFF)
+	log_filename, WL_filename, Semantic_filename, Instance, Clustering = Initialization(sys.argv[1])
 	print 'log_filename = ',log_filename
+	#log file: print the Activity Recognition Component's Running Log for further processing
 	print 'WaitingList_filename = ', WL_filename
+	#Waiting List: instance which will be deleted 
 	print 'Semantic_filename = ', Semantic_filename
-	print "ARFF_header_filename = ", ARFF_header_filename
-	print "configure = ", configure
-
+	#Semantic file: save semantic meaning in json format
+	
 	while True:
-		command = raw_input('\nADD:ADD [ARFF\'s filename]\nAR:AR [raw data of dataset\' filename]\nplease enter the command:')
+		command = raw_input('\nADD:ADD [instance \'sfilename and clustering \'s filename]\nAR:AR [filename]\nplease enter the command:')
 		print 'command: '+command
 		command = command.split(' ')
 		if command[0] == 'ADD' or command[0] == 'Add':
 			print "MARCS Update Recognition Model...loading..."
 			#update the model which is generated by Adaptation Component
+			print "Instance's filename = ", command[1]
+			print "Instance clustering result's filename = ", command[2]
+			Instance, Clustering = AddModelInstance(command[1], command[2], Instance, Clustering)
 			print "MARCS Update Recognition Model...finished."
 			pass
 
 		if command[0] == 'AR' or command[0] == 'ar':
 			print "MARCS Activity Recognition...loading..."
-			ActivityRecognition(command[1], WL_filename, Semantic_filename, ARFF_header_filename, configure)
+			ActivityRecognition(command[1], WL_filename, Semantic_filename, Instance, Clustering)
 			# Input File: like BL313's dataset
 			print "MARCS Activity Recognition...finished."
 			pass

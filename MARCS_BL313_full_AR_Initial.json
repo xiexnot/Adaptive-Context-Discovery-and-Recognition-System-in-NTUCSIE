@@ -1,8 +1,7 @@
 {
 	"log_filename":"AR_Log",
 	"WL_filename":"WaitingList_Log",
-	"Initial_ARFF_filename":"BL313_full_initial.arff",
 	"Semantic_filename":"Semantic_Meaning_Log",
-	"ARFF_header_filename":"BL313_full_initial(header).arff",
-	"configure_filename":"dataset/BL313_Dataset_201411/s_dataset_configure"
+	"Initial_Instance_filename":"dataset/BL313_Dataset_201411/s_dataset",
+	"Initial_Clustering_filename":"BL313_full_result/cluster_BL313_full_0.9_0"
 }

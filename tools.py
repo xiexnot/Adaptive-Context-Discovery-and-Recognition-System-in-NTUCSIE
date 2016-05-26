@@ -21,6 +21,8 @@ def read_dataset(File_Name, Split_Symbol):
 	f = open(File_Name)
 	data = f.read()
 	data = data.split('\n')
+	while len(data[data.__len__()-1]) == 0:
+		data = data[:-1]
 	for i in range(len(data)):
 		data[i] = data[i].split(Split_Symbol)
 	f.close()
