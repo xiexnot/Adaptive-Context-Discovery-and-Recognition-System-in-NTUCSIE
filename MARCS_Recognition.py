@@ -20,7 +20,7 @@ import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
 
-from sklearn import tree, svm, mixture
+from sklearn import tree, svm, mixturez
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
 import numpy as np
