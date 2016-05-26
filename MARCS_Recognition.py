@@ -20,10 +20,24 @@ import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
 
+from sklearn import tree, svm, mixture
+from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.naive_bayes import GaussianNB, BernoulliNB
+import numpy as np
 
-def ModelPossibilityDistribution(instance):
-	
-	return 0
+
+def ModelPossibilityDistribution(clf, instance):
+	Distribution = clf.predict_proba(instance)
+	print Distribution[0]
+	return list(Distribution[0])
+
+def BuildClassifier(Instance, Clustering):
+	#clf = GaussianNB()
+	#clf = tree.DecisionTreeClassifier()
+	Instance = np.array(Instance)
+	Clustering = np.array(Clustering)
+	clf = clf.fit(Instance, Clustering)
+	return clf
 
 """
 ----------------------------------------------
@@ -72,7 +86,7 @@ def PrintInstanceWL(instance, WL_filename):
 def read_json(filename):
 	FILE = open(filename,'rU')
 	rawdata = FILE.read()
-	decoded = json.dumps(rawdata)
+	decoded = json.loads(rawdata)
 	FILE.close()
 	return decoded
 
@@ -91,23 +105,37 @@ def print_json_to_file(filename, dict_data):
 ----------------------------------------------
 """
 
-def ActivityRecognition(AR_filename, WL_filename, Semantic_filename):
+def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, Clustering):
 	pass
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
+	for i in range(AR_instance.__len__()):
+		for j in range(len(AR_instance[i])):
+			if 'on' in AR_instance[i][j]:
+				AR_instance[i][j] = '1'
+			elif 'off' in AR_instance[i][j]:
+				AR_instance[i][j] = '0'
+			elif 'stand' in AR_instance[i][j]:
+				AR_instance[i][j] = '0.1'
+			AR_instance[i][j] = float(AR_instance[i][j])
+
 	#read the semantic meaning from extrenal file
 	Semantic_Meaning = read_json(Semantic_filename)
 
+	#build classifier for the next step's processing
+	clf = BuildClassifier(Instance, Clustering)
+	print "type of Semantic_Meaning = ", type(Semantic_Meaning)
 	is_unfamilar_pattern = -1
 	new_semantic_meaning = False
 	for i in range(len(AR_instance)):
-		Distribution = ModelPossibilityDistribution(AR_instance[i])
+		Distribution = ModelPossibilityDistribution(clf, AR_instance[i])
 		is_familar_pattern = isFamilarPattern(Distribution, Semantic_Meaning)
+		print "is_familar_pattern = ", is_familar_pattern
 		if is_familar_pattern < 0:
 			print "Add a new instance into WaitingList..."
 			PrintInstanceWL(AR_instance[i],WL_filename)
 		else:
-			if Semantic_Meaning.has_key(str(is_familar_pattern)) == True:
+			if Semantic_Meaning.has_key((is_familar_pattern)) == True:
 				#find propable semantic meaning
 				print "AR Result: " + Semantic_Meaning[str(is_familar_pattern)]
 			else:
@@ -143,7 +171,7 @@ def Initialization(filename):
 	#read the instance from initial model
 	FILE = open(decoded['Initial_Instance_filename'],'rU')
 	Instance = FILE.read()
-	Instance = Instancel.split('\n')
+	Instance = Instance.split('\n')
 	while len(Instance[Instance.__len__()-1]) == 0:
 		Instance = Instance[:-1]
 	for i in range(Instance.__len__()):
@@ -155,6 +183,7 @@ def Initialization(filename):
 				Instance[i][j] = '0'
 			elif 'stand' in Instance[i][j]:
 				Instance[i][j] = '0.1'
+			Instance[i][j] = float(Instance[i][j])
 	FILE.close()
 
 	#read the clustering result from initial instances
@@ -203,7 +232,6 @@ def main():
 			print "Instance clustering result's filename = ", command[2]
 			Instance, Clustering = AddModelInstance(command[1], command[2], Instance, Clustering)
 			print "MARCS Update Recognition Model...finished."
-			pass
 
 		if command[0] == 'AR' or command[0] == 'ar':
 			print "MARCS Activity Recognition...loading..."
