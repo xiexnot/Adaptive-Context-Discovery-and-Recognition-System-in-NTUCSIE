@@ -33,15 +33,22 @@ def ModelPossibilityDistribution(clf, instance):
 	print Distribution[0]
 	return list(Distribution[0])
 
-def BuildClassifier(Instance, Clustering):
+def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#clf = GaussianNB()
 	#clf = tree.DecisionTreeClassifier()
 	#clf = MultinomialNB()
 	#clf = svm.SVC(probability=True)
+	#Instance = np.array(Instance)
+	#Clustering = np.array(Clustering)
+	#clf = clf.fit(Instance, Clustering)
+
 	clf = tree.ExtraTreeClassifier()
-	Instance = np.array(Instance)
-	Clustering = np.array(Clustering)
-	clf = clf.fit(Instance, Clustering)
+	Clustering_Metric = np.array(Clustering_Metric)
+	Clustering_Metric_Label = []
+	for i in range(Clustering_Metric_Metric.__len__()):
+		Clustering_Metric_Label.append(i)
+	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
+	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
 	return clf
 
 """
@@ -128,7 +135,7 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	Semantic_Meaning = read_json(Semantic_filename)
 
 	#build classifier for the next step's processing
-	clf = BuildClassifier(Instance, Clustering)
+	clf = BuildClassifier(Instance, Clustering, Clustering_Metric)
 	print "type of Semantic_Meaning = ", type(Semantic_Meaning)
 	is_unfamilar_pattern = -1
 	new_semantic_meaning = False
@@ -252,7 +259,7 @@ def AddModelInstance(instance_filename, clustering_filename, metric_filename, In
 			AdditionMetric[i][j] = float(AdditionMetric[i][j])
 	FILE.close()
 	Clustering_Metric = Clustering_Metric + AdditionMetric
-	
+
 	return Instance, Clustering, Clustering_Metric
 	
 def main():
