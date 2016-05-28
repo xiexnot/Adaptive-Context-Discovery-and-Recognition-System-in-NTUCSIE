@@ -3,5 +3,6 @@
 	"WL_filename":"WaitingList_Log",
 	"Semantic_filename":"Semantic_Meaning_Log",
 	"Initial_Instance_filename":"dataset/BL313_Dataset_201411/s_dataset",
-	"Initial_Clustering_filename":"BL313_full_result/cluster_BL313_full_0.9_0"
+	"Initial_Clustering_filename":"BL313_full_result/cluster_BL313_full_0.9_0",
+	"metric_filename":"BL313_full_result/cluster_metric_BL313_full_0.9_0"
 }
