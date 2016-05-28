@@ -231,6 +231,7 @@ for component in range(len(d_eigenvector)):
 	nominal_list = range(0,0)
 	
 	c1,c2,data_ch,data_cluster,S = DAP(d_transf,numeric_list,nominal_list,Pinit)
+	print data_cluster
 	C.append(c1)
 	#print "max_cluster_number = ",find_max(c1)
 	break

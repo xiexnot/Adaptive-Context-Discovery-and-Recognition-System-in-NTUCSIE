@@ -20,9 +20,9 @@ import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
 
-from sklearn import tree, svm, mixturez
+from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
-from sklearn.naive_bayes import GaussianNB, BernoulliNB
+from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 import numpy as np
 
 
@@ -34,6 +34,8 @@ def ModelPossibilityDistribution(clf, instance):
 def BuildClassifier(Instance, Clustering):
 	#clf = GaussianNB()
 	#clf = tree.DecisionTreeClassifier()
+	#clf = MultinomialNB()
+	clf = svm.SVC(probability=True)
 	Instance = np.array(Instance)
 	Clustering = np.array(Clustering)
 	clf = clf.fit(Instance, Clustering)

@@ -347,38 +347,39 @@ def s4(data,cluster,cluster_final,numeric_list,nominal_list):
 	return new_data, new_data2
 
 def DAP(d,numeric_list,nominal_list,Pinit):
-    feature_ch = []
-    feature_cluster = []
-    q = s1(d,numeric_list,nominal_list,Pinit)
+	feature_ch = []
+	feature_cluster = []
+	q = s1(d,numeric_list,nominal_list,Pinit)
 	# q is a list of Similarity Matrix for each unique value in each Feature
-    for i in range(len(q)):
-        ch,c = ap_rawdata(q[i])
+	for i in range(len(q)):
+		ch,c = ap_rawdata(q[i])
 		# ch is a list of cluster head for Feature(i)
 		# c is a list of clustering result for each unique value in Feature(i)
-        c = [ch[i] for i in c]
+		c = [ch[i] for i in c]
 		# it seems to be replace each unique value in Feature(i) as its cluster head
-        feature_ch.append(list(ch))
-        feature_cluster.append(list(c))
+		feature_ch.append(list(ch))
+		feature_cluster.append(list(c))
 		# feature_ch is a list of cluster head in each Feature
 		# feature_cluster is a list of ClusterHead for each unique value in each Feature
 	print "s3"
-    S,new_d = s3(d,feature_cluster,numeric_list,nominal_list,Pinit)
+	S,new_d = s3(d,feature_cluster,numeric_list,nominal_list,Pinit)
 	# new_d is the dataset with unique combination of values, where i-th value in a combination is the index of the cluster head of that value in feature(i)
 	# S is the similarity matrix of new_d
-    data_ch, data_cluster = ap_rawdata(S)
+	data_ch, data_cluster = ap_rawdata(S)
 	# data_ch is a list of cluster head for new_d
 	# data_cluster is a list of clustering result for each data in new_d
-    data_ch = list(data_ch)
-    data_cluster = list(data_cluster)
-#	print "q = ",q
-#   print "feature_ch = ",feature_ch
-#   print "feature_cluster = ",feature_cluster
-#   print "data_cluster = ",data_cluster
-#   print "data_ch = ",data_ch
+	data_ch = list(data_ch)	
+	data_cluster = list(data_cluster)	
+	print "q = ",q
+	print "feature_ch = ", feature_ch
+	print "feature_cluster = ",feature_cluster
+	#print "data_cluster = ",data_cluster
+	#print "data_ch = ",data_ch
 
-    d1,d2 = s4(d,feature_cluster,data_cluster,numeric_list,nominal_list)
-    print len(S)
-    return d1,d2,data_ch,data_cluster,S
+	d1,d2 = s4(d,feature_cluster,data_cluster,numeric_list,nominal_list)
+	#print d2
+	#print len(S)
+	return d1,d2,data_ch,data_cluster,S
 
 #	modified in 2015.11.17
 #	Calculate_Simi_Matrix means calculating the parameters of Simi Matrix in the combinations based on given each feature's simi matrix
