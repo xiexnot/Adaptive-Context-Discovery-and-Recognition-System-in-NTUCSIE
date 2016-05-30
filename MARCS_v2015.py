@@ -47,14 +47,14 @@ def find_max(x):
 ----------------------------------------------
 """
 	
-def InputData():
-	global d
-	global eigenvalue_sum_threshold, Pinit
-	global eigenvalue_filename, eigenvector_filename, cluster_filename
-	if sys.argv[1].__len__() == 0:
+def InputData(input_json_filename):
+	#global d
+	#global eigenvalue_sum_threshold, Pinit
+	#global eigenvalue_filename, eigenvector_filename, cluster_filename
+	if input_json_filename.__len__() == 0:
 		print "python [python's filename] [json's filename]"
 		exit()
-	FILE = open(sys.argv[1],"rU")
+	FILE = open(input_json_filename,"rU")
 	rawdata = FILE.read()
 	decoded = json.loads(rawdata)
 	print rawdata	
@@ -64,16 +64,14 @@ def InputData():
 	print decoded['eigenvalue_filename']
 	print decoded['eigenvector_filename']
 	print decoded['cluster_filename']
-	print "start read dataset"
-	d = read_dataset(decoded['dataset_filename'],'\t')
-	print "end of read_dataset"
+	
 	FILE.close()
-	Pinit = int(decoded['Pinit'])
-	eigenvalue_sum_threshold = float(decoded['eigenvalue_sum_threshold'])
-	eigenvector_filename = copy.deepcopy(decoded['eigenvector_filename'])
-	eigenvalue_filename = copy.deepcopy(decoded['eigenvalue_filename'])
-	cluster_filename = copy.deepcopy(decoded['cluster_filename'])
-	return 0
+	#Pinit = int(decoded['Pinit'])
+	#eigenvalue_sum_threshold = float(decoded['eigenvalue_sum_threshold'])
+	#eigenvector_filename = copy.deepcopy(decoded['eigenvector_filename'])
+	#eigenvalue_filename = copy.deepcopy(decoded['eigenvalue_filename'])
+	#cluster_filename = copy.deepcopy(decoded['cluster_filename'])
+	return decoded['dataset_filename'], decoded['eigenvalue_sum_threshold'], decoded['Pinit'], decoded['eigenvalue_filename'], decoded['eigenvector_filename'], decoded['cluster_filename']
 	
 """
 ----------------------------------------------
@@ -142,13 +140,13 @@ def DatasetNormalization(d):
 ----------------------------------------------
 """
 	
-def DimensionalityReduction(d):
+def DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename):
 	print "start to PCA"
 	d_pca = pca(np.array(d))
 	d_eigenvalue = [i[0] for i in d_pca]
 	d_eigenvector = [i[1] for i in d_pca]
 
-	global eigenvector_filename
+	#global eigenvector_filename
 	eigenvector_output = open(eigenvector_filename,'w')
 	for i in range(len(d_eigenvector)):
 		for j in range(len(d_eigenvector[i])):
@@ -156,9 +154,9 @@ def DimensionalityReduction(d):
 		eigenvector_output.write("\n")
 	eigenvector_output.close()
 	
-	global d_eigenvalue_sum, d_eigenvalue_total
+	#global d_eigenvalue_sum, d_eigenvalue_total
 
-	global eigenvalue_filename
+	#global eigenvalue_filename
 	eigenvalue_output = open(eigenvalue_filename,'w')
 	d_eigenvalue_total = 0.0
 	for i in range(len(d_eigenvalue)):
@@ -168,7 +166,7 @@ def DimensionalityReduction(d):
 		d_eigenvalue_sum += d_eigenvalue[i]/d_eigenvalue_total
 		print >> eigenvalue_output, d_eigenvalue[i]/d_eigenvalue_total, "\t", d_eigenvalue_sum
 	eigenvalue_output.close()
-	return d_eigenvalue, d_eigenvector
+	return d_eigenvalue, d_eigenvector, d_eigenvalue_total
 	
 """
 ----------------------------------------------
@@ -179,8 +177,8 @@ def DimensionalityReduction(d):
 ----------------------------------------------
 """
 	
-def PrintClusteringResult(c1):
-	global cluster_filename
+def PrintClusteringResult(cluster_filename, c1):
+	#global cluster_filename
 	print "Printing Cluster(DAP)"
 	f = open(cluster_filename,'w')
 	for i in range(len(c1)):
@@ -192,49 +190,63 @@ def PrintClusteringResult(c1):
 	
 #========================================
 
+#main component
 
-Pinit = -1
-eigenvalue_sum_threshold = 0.0
-InputData()	
+#========================================
 
-d = ConvertDataFormat(d)
+def main(input_json_filename):
+
+	dataset_filename, eigenvalue_sum_threshold, Pinit, eigenvalue_filename, eigenvector_filename, cluster_filename = InputData(input_json_filename)
+	# decoded['dataset_filename'], decoded['eigenvalue_sum_threshold'], decoded['Pinit'], decoded['eigenvalue_filename'], decoded['eigenvector_filename'], decoded['cluster_filename']
+	eigenvalue_sum_threshold = float(eigenvalue_sum_threshold)
+	Pinit = int(Pinit)
+
+	print "start read dataset"
+	d = read_dataset(dataset_filename,'\t')
+	print "end of read_dataset"
+
+	d = ConvertDataFormat(d)
 	
-print type(d[0][0])
-d = DatasetNormalization(d)
+	print type(d[0][0])
+	d = DatasetNormalization(d)
 
-d_eigenvalue, d_eigenvector = DimensionalityReduction(d)
+	d_eigenvalue, d_eigenvector, d_eigenvalue_total = DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename)
 
-C=[]
-counter = []
-flag_counter = []
-value_counter = []
+	C=[]
+	counter = []
+	flag_counter = []
+	value_counter = []
 
-print "start to DAP"
+	print "start to DAP"
 
-d_eigenvalue_sum = 0.0
-for component in range(len(d_eigenvector)):
-	print "component = ",component
-	d_eigenvalue_sum += d_eigenvalue[component]/d_eigenvalue_total
-	print "d_eigenvalue_sum = ",d_eigenvalue_sum
-	if d_eigenvalue_sum > eigenvalue_sum_threshold:
-		pass
-	else:
-		continue
-	trans_matrix = np.array(zip(*d_eigenvector[0:component+1]))
-	d_transf = trans_matrix.T.dot(np.array(d).T).T
+	d_eigenvalue_sum = 0.0
+	for component in range(len(d_eigenvector)):
+		print "component = ",component
+		d_eigenvalue_sum += d_eigenvalue[component]/d_eigenvalue_total
+		print "d_eigenvalue_sum = ",d_eigenvalue_sum
+		if d_eigenvalue_sum > eigenvalue_sum_threshold:
+			pass
+		else:
+			continue
+		trans_matrix = np.array(zip(*d_eigenvector[0:component+1]))
+		d_transf = trans_matrix.T.dot(np.array(d).T).T
 
-	if component <2:
-		d_transf = [[round(j,2) for j in i] for i in d_transf]
-	else:
-		d_transf = [[round(j,1) for j in i] for i in d_transf]
-	numeric_list = range(0,component+1)
-	nominal_list = range(0,0)
+		if component <2:
+			d_transf = [[round(j,2) for j in i] for i in d_transf]
+		else:
+			d_transf = [[round(j,1) for j in i] for i in d_transf]
+		numeric_list = range(0,component+1)
+		nominal_list = range(0,0)
 	
-	c1,c2,data_ch,data_cluster,S = DAP(d_transf,numeric_list,nominal_list,Pinit)
-	print data_cluster
-	C.append(c1)
+		c1,c2,data_ch,data_cluster,S = DAP(d_transf,numeric_list,nominal_list,Pinit)
+		print data_cluster
+		C.append(c1)
 	#print "max_cluster_number = ",find_max(c1)
-	break
+		break
 
-PrintClusteringResult(c1)
-print "max = ",find_max(c1)
+	PrintClusteringResult(cluster_filename, c1)
+	print "max = ",find_max(c1)
+	return c1
+
+if __name__ == "__main__":
+	main(sys.argv[1])
