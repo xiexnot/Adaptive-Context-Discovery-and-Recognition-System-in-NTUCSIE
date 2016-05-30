@@ -21,7 +21,7 @@ import numpy as np
 def main(input_json_filename):
 
 	FILE = open(input_json_filename,'rU')
-	rawdata = FILE.read()
+	rawdata = FILE.read(input_json_filename)
 	decoded = json.loads(rawdata)
 	FILE.close()
 
@@ -109,4 +109,4 @@ def main(input_json_filename):
 	print clf.predict_proba(test)
 
 if __name__ == "__main__":
-	main()
+	main(input_json_filename)
