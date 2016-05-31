@@ -1,10 +1,53 @@
 from math import log
 from collections import Counter
 from AP import *
+
 """
-	Updated:	2015.11.05
-	Hints:	Sometimes the feature[n][i] (string) will equal to -0.0, which may lead to mistake.
+----------------------------------------------
+	ConvertDataFormat
+	Description: Convert dataset into real number format 
+	Steps: 1. convert 'on' 'off' 'stand' into real number(this is specially for BL313) 2. 
+	Input: d(dataset)
+	Output: 0 for success, 1 for some error
+----------------------------------------------
 """
+	
+def Convert2FloatArray(d):
+	array = 0
+
+	if type(list[0]) != (list):
+		array = 2
+	else:
+		array = 1
+	print "d's array = ", array
+
+	if array == 1:
+		for i in range(len(d)):
+			if 'on' in d[i]:
+				d[i] = '1'
+			elif 'off' in d[i]:
+				d[i] = '0.1'
+			elif 'stand' in d[i]:
+				d[i] = '0'
+		print "start to convert to float"
+		d = [float(i) for i in d]
+		print 'start to convert to float...done...'
+
+	if array == 2:
+		for i in range(len(d)):
+			for j in range(len(d[i])):
+				if 'on' in d[i][j]:
+					d[i][j] = 1
+				elif 'off' in d[i][j]:
+					d[i][j] = 0.1
+				elif 'stand' in d[i][j]:
+					d[i][j] = 0
+		print "start to convert to float"
+		d = [[float(j) for j in i] for i in d]
+		print 'start to convert to float...done...'
+
+	return d
+
 
 def entropy(Alphabet):
 	H = 0

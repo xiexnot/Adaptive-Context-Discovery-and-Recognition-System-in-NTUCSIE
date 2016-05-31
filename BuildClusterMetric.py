@@ -1,3 +1,7 @@
+#
+#	Build Cluster Metric.py
+#
+
 import os
 import sys
 import math
@@ -18,17 +22,22 @@ from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 import numpy as np
 
-def main(input_json_filename):
+from tools import Convert2FloatArray
 
+def initialization(input_json_filename):
 	FILE = open(input_json_filename,'rU')
 	rawdata = FILE.read(input_json_filename)
 	decoded = json.loads(rawdata)
 	FILE.close()
 
+	return decoded
+
+def main(decoded):
+
 	print decoded["clustering_filename"]
 	print decoded["dataset_filename"]
 	print decoded["metric_filename"]
-
+	
 	instance = read_dataset(decoded["dataset_filename"],'\t')
 
 	FILE = open(decoded["clustering_filename"],'rU')
@@ -37,7 +46,7 @@ def main(input_json_filename):
 	if clustering[clustering.__len__()-1]:
 		clustering = clustering[:-1]
 	FILE.close()
-
+"""
 	for i in range(instance.__len__()):
 		for j in range(len(instance[i])):
 			if 'on' in instance[i][j]:
@@ -48,6 +57,9 @@ def main(input_json_filename):
 				instance[i][j] = '0.1'
 
 			instance[i][j] = float(instance[i][j])
+"""
+
+	instance = Convert2FloatArray(instance)
 
 	for i in range(clustering.__len__()):
 		clustering[i] = int(clustering[i])
@@ -85,9 +97,10 @@ def main(input_json_filename):
 	clustering_head_label = []
 	for i in range(clustering_head.__len__()):
 		clustering_head_label.append(i)
+"""	
+	clf = svm.SVC(probability = True)
+	clf = tree.DecisionTreeClassifier()
 
-#clf = svm.SVC(probability = True)
-#clf = tree.DecisionTreeClassifier()
 	clf = tree.ExtraTreeClassifier()
 	clf = clf.fit(clustering_head, clustering_head_label)
 
@@ -107,6 +120,9 @@ def main(input_json_filename):
 	FILE.close()
 
 	print clf.predict_proba(test)
+"""
+	return clustering_head, clustering_head_label
 
 if __name__ == "__main__":
-	main(input_json_filename)
+	decoded = initialization(sys.argv[1])
+	main(decoded)

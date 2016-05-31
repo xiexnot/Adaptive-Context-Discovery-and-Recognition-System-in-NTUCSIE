@@ -41,31 +41,49 @@ def find_max(x):
 """
 ----------------------------------------------
 	InputData
-	Description: read the dataset from sys.argv[1]
+	Description: read the dataset from json data
 	Input:	N/A
 	Output:	N/A
 ----------------------------------------------
 """
-	
-def InputData(input_json_filename):
-	#global d
-	#global eigenvalue_sum_threshold, Pinit
-	#global eigenvalue_filename, eigenvector_filename, cluster_filename
+
+def Initialization(input_json_filename):
 	if input_json_filename.__len__() == 0:
 		print "python [python's filename] [json's filename]"
 		exit()
 	FILE = open(input_json_filename,"rU")
 	rawdata = FILE.read()
 	decoded = json.loads(rawdata)
-	print rawdata	
+	FILE.close()
+	return decoded
+	
+def InputData(decoded):
+	#global d
+	#global eigenvalue_sum_threshold, Pinit
+	#global eigenvalue_filename, eigenvector_filename, cluster_filename
+	
 	print decoded['dataset_filename']
 	print decoded['eigenvalue_sum_threshold']
 	print decoded['Pinit']
-	print decoded['eigenvalue_filename']
-	print decoded['eigenvector_filename']
-	print decoded['cluster_filename']
+
+	if decoded.has_key('eigenvalue_filename') == True:
+		print decoded['eigenvalue_filename']
+	else:
+		print 'empty eigenvalue_filename'
+		decoded['eigenvalue_filename'] = ""
 	
-	FILE.close()
+	if decoded.has_key('eigenvector_filename') == True:
+		print decoded['eigenvector_filename']
+	else:
+		print 'empty eigenvector_filename'
+		decoded['eigenvector_filename']
+
+	if decoded.has_key('cluster_filename') == True:
+		print decoded['cluster_filename']
+	else:
+		print 'empty cluster_filename'
+		decoded['cluster_filename'] = ""
+
 	#Pinit = int(decoded['Pinit'])
 	#eigenvalue_sum_threshold = float(decoded['eigenvalue_sum_threshold'])
 	#eigenvector_filename = copy.deepcopy(decoded['eigenvector_filename'])
@@ -73,39 +91,7 @@ def InputData(input_json_filename):
 	#cluster_filename = copy.deepcopy(decoded['cluster_filename'])
 	return decoded['dataset_filename'], decoded['eigenvalue_sum_threshold'], decoded['Pinit'], decoded['eigenvalue_filename'], decoded['eigenvector_filename'], decoded['cluster_filename']
 	
-"""
-----------------------------------------------
-	ConvertDataFormat
-	Description: Convert dataset into real number format 
-	Steps: 1. convert 'on' 'off' 'stand' into real number(this is specially for BL313) 2. 
-	Input: d(dataset)
-	Output: 0 for success, 1 for some error
-----------------------------------------------
-"""
-	
-def ConvertDataFormat(d):
-	#global d
-	for i in range(len(d)):
-		for j in range(len(d[i])):
-			if 'on' in d[i][j]:
-				d[i][j] = 1
-			elif 'off' in d[i][j]:
-				d[i][j] = 0.1
-			elif 'stand' in d[i][j]:
-				d[i][j] = 0
-	print "start to convert to float"
-	try:
-		d = [[float(j) for j in i] for i in d]
-		print 'start to convert to float...done...'
-	except:
-		for i in range(len(d)):
-			for j in range(len(d[i])):
-				try:
-					d[i][j] = float(d[i][j])
-				except:
-					print i,"\t",j,"\t",d[i][j]
-					return 1
-	return d
+
 
 """
 ----------------------------------------------
@@ -141,31 +127,39 @@ def DatasetNormalization(d):
 """
 	
 def DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename):
+
 	print "start to PCA"
 	d_pca = pca(np.array(d))
 	d_eigenvalue = [i[0] for i in d_pca]
 	d_eigenvector = [i[1] for i in d_pca]
 
-	#global eigenvector_filename
-	eigenvector_output = open(eigenvector_filename,'w')
-	for i in range(len(d_eigenvector)):
-		for j in range(len(d_eigenvector[i])):
-			eigenvector_output.write(str(d_eigenvector[i][j])+"\t")
-		eigenvector_output.write("\n")
-	eigenvector_output.close()
-	
-	#global d_eigenvalue_sum, d_eigenvalue_total
+	if eigenvector_filename.__len__() != 0:
+		#there exits an eigenvector filename
+		eigenvector_output = open(eigenvector_filename,'w')
+		for i in range(len(d_eigenvector)):
+			for j in range(len(d_eigenvector[i])):
+				eigenvector_output.write(str(d_eigenvector[i][j])+"\t")
+			eigenvector_output.write("\n")
+		eigenvector_output.close()
+	else:
+		#this is an empty eigenvector filename
+		pass
 
-	#global eigenvalue_filename
 	eigenvalue_output = open(eigenvalue_filename,'w')
-	d_eigenvalue_total = 0.0
-	for i in range(len(d_eigenvalue)):
-		d_eigenvalue_total += d_eigenvalue[i]
-	d_eigenvalue_sum = 0.0
-	for i in range(len(d_eigenvalue)):
-		d_eigenvalue_sum += d_eigenvalue[i]/d_eigenvalue_total
-		print >> eigenvalue_output, d_eigenvalue[i]/d_eigenvalue_total, "\t", d_eigenvalue_sum
-	eigenvalue_output.close()
+	if eigenvalue_filename.__len__() != 0:
+		#there exists an eigenvalue filename
+		d_eigenvalue_total = 0.0
+		for i in range(len(d_eigenvalue)):
+			d_eigenvalue_total += d_eigenvalue[i]
+		d_eigenvalue_sum = 0.0
+		for i in range(len(d_eigenvalue)):
+			d_eigenvalue_sum += d_eigenvalue[i]/d_eigenvalue_total
+			print >> eigenvalue_output, d_eigenvalue[i]/d_eigenvalue_total, "\t", d_eigenvalue_sum
+		eigenvalue_output.close()
+	else:
+		#this is an empty eigenvalue filename
+		pass
+
 	return d_eigenvalue, d_eigenvector, d_eigenvalue_total
 	
 """
@@ -179,6 +173,9 @@ def DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename):
 	
 def PrintClusteringResult(cluster_filename, c1):
 	#global cluster_filename
+	if cluster_filename.__len__() == 0:
+		print "no need to print external file"
+		return 0
 	print "Printing Cluster(DAP)"
 	f = open(cluster_filename,'w')
 	for i in range(len(c1)):
@@ -194,9 +191,9 @@ def PrintClusteringResult(cluster_filename, c1):
 
 #========================================
 
-def main(input_json_filename):
+def main(decoded):
 
-	dataset_filename, eigenvalue_sum_threshold, Pinit, eigenvalue_filename, eigenvector_filename, cluster_filename = InputData(input_json_filename)
+	dataset_filename, eigenvalue_sum_threshold, Pinit, eigenvalue_filename, eigenvector_filename, cluster_filename = InputData(decoded)
 	# decoded['dataset_filename'], decoded['eigenvalue_sum_threshold'], decoded['Pinit'], decoded['eigenvalue_filename'], decoded['eigenvector_filename'], decoded['cluster_filename']
 	eigenvalue_sum_threshold = float(eigenvalue_sum_threshold)
 	Pinit = int(Pinit)
@@ -204,10 +201,7 @@ def main(input_json_filename):
 	print "start read dataset"
 	d = read_dataset(dataset_filename,'\t')
 	print "end of read_dataset"
-
-	d = ConvertDataFormat(d)
-	
-	print type(d[0][0])
+	d = Convert2FloatArray(d)
 	d = DatasetNormalization(d)
 
 	d_eigenvalue, d_eigenvector, d_eigenvalue_total = DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename)
@@ -241,7 +235,7 @@ def main(input_json_filename):
 		c1,c2,data_ch,data_cluster,S = DAP(d_transf,numeric_list,nominal_list,Pinit)
 		print data_cluster
 		C.append(c1)
-	#print "max_cluster_number = ",find_max(c1)
+		#print "max_cluster_number = ",find_max(c1)
 		break
 
 	PrintClusteringResult(cluster_filename, c1)
@@ -249,4 +243,5 @@ def main(input_json_filename):
 	return c1
 
 if __name__ == "__main__":
-	main(sys.argv[1])
+	decoded = Initialization(sys.argv[1])
+	main(decoded)

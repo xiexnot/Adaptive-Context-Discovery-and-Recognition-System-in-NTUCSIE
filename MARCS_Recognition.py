@@ -13,7 +13,7 @@ import math
 import json
 
 import weka.core.jvm as jvm
-from tools import read_dataset
+from tools import read_dataset, Convert2FloatArray
 import traceback
 import weka.core.jvm as jvm
 from weka.core.converters import Loader
@@ -26,7 +26,6 @@ from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 import numpy as np
-
 
 def ModelPossibilityDistribution(clf, instance):
 	Distribution = clf.predict_proba(instance)
@@ -121,6 +120,8 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	pass
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
+	AR_instance = Convert2FloatArray(AR_instance)
+	"""
 	for i in range(AR_instance.__len__()):
 		for j in range(len(AR_instance[i])):
 			if 'on' in AR_instance[i][j]:
@@ -130,7 +131,7 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 			elif 'stand' in AR_instance[i][j]:
 				AR_instance[i][j] = '0.1'
 			AR_instance[i][j] = float(AR_instance[i][j])
-
+	"""
 	#read the semantic meaning from extrenal file
 	Semantic_Meaning = read_json(Semantic_filename)
 
@@ -182,6 +183,12 @@ def Initialization(filename):
 	# initial models's clustering result
 
 	#read the instance from initial model
+
+	Instance = read_dataset(decoded['Initial_Instance_filename'],'\t')
+	Instance = Convert2FloatArray(Instance)
+
+"""
+
 	FILE = open(decoded['Initial_Instance_filename'],'rU')
 	Instance = FILE.read()
 	Instance = Instance.split('\n')
@@ -198,6 +205,7 @@ def Initialization(filename):
 				Instance[i][j] = '0.1'
 			Instance[i][j] = float(Instance[i][j])
 	FILE.close()
+"""
 
 	#read the clustering result from initial instances
 	FILE = open(decoded['Initial_Clustering_filename'],'rU')
@@ -210,6 +218,8 @@ def Initialization(filename):
 	#read the clustering metrics for instances from external file
 	
 	Clustering_Metric = read_dataset(decoded['metric_filename'],'\t')
+	Clustering_Metric = Convert2FloatArray(Clustering_Metric)
+	"""
 	for i in range(Clustering_Metric.__len__()):
 		for j in range(len(Clustering_Metric[i])):
 			if 'on' in Clustering_Metric[i][j]:
@@ -219,7 +229,7 @@ def Initialization(filename):
 			elif 'stand' in Clustering_Metric[i][j]:
 				Clustering_Metric[i][j] = '0.1'
 			Clustering_Metric[i][j] = float(Clustering_Metric[i][j])
-
+	"""
 	return decoded["log_filename"], decoded["WL_filename"], decoded["Semantic_filename"], Instance , Clustering, Clustering_Metric
 
 """
