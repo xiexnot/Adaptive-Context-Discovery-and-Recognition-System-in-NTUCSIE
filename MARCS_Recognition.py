@@ -27,6 +27,7 @@ import weka.core.types as types
 from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
+from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
 
 def ModelPossibilityDistribution(clf, instance):
@@ -38,12 +39,11 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#clf = GaussianNB()
 	#clf = tree.DecisionTreeClassifier()
 	#clf = MultinomialNB()
+	#clf = tree.ExtraTreeClassifier()
 	#clf = svm.SVC(probability=True)
-	#Instance = np.array(Instance)
-	#Clustering = np.array(Clustering)
-	#clf = clf.fit(Instance, Clustering)
-	#clf = GaussianNB()
-	clf = tree.ExtraTreeClassifier()
+	#clf = DPGMM(n_components = 13)
+	#clf = svm.LinearSVC(probability=True)
+	#clf = svm.NuSVC(probability=True)
 	Clustering_Metric = np.array(Clustering_Metric)
 	Clustering_Metric_Label = []
 	for i in range(Clustering_Metric.__len__()):
