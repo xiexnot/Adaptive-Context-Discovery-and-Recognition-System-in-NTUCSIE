@@ -15,7 +15,7 @@ from AP import *
 def Convert2FloatArray(d):
 	array = 0
 
-	if type(list[0]) != (list):
+	if type(d[0]) != type(list):
 		array = 2
 	else:
 		array = 1
