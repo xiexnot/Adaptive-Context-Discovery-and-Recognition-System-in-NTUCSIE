@@ -12,15 +12,17 @@ import sys
 import math
 import json
 
-import weka.core.jvm as jvm
 from tools import read_dataset, Convert2FloatArray
 import traceback
+
+"""
 import weka.core.jvm as jvm
 from weka.core.converters import Loader
 from weka.classifiers import Classifier
 import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
+"""
 
 from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
@@ -40,11 +42,11 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#Instance = np.array(Instance)
 	#Clustering = np.array(Clustering)
 	#clf = clf.fit(Instance, Clustering)
-
+	#clf = GaussianNB()
 	clf = tree.ExtraTreeClassifier()
 	Clustering_Metric = np.array(Clustering_Metric)
 	Clustering_Metric_Label = []
-	for i in range(Clustering_Metric_Metric.__len__()):
+	for i in range(Clustering_Metric.__len__()):
 		Clustering_Metric_Label.append(i)
 	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
 	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
@@ -187,26 +189,6 @@ def Initialization(filename):
 	Instance = read_dataset(decoded['Initial_Instance_filename'],'\t')
 	Instance = Convert2FloatArray(Instance)
 
-"""
-
-	FILE = open(decoded['Initial_Instance_filename'],'rU')
-	Instance = FILE.read()
-	Instance = Instance.split('\n')
-	while len(Instance[Instance.__len__()-1]) == 0:
-		Instance = Instance[:-1]
-	for i in range(Instance.__len__()):
-		Instance[i] = Instance[i].split('\t')
-		for j in range(len(Instance[i])):
-			if 'on' in Instance[i][j]:
-				Instance[i][j] = '1'
-			elif 'off' in Instance[i][j]:
-				Instance[i][j] = '0'
-			elif 'stand' in Instance[i][j]:
-				Instance[i][j] = '0.1'
-			Instance[i][j] = float(Instance[i][j])
-	FILE.close()
-"""
-
 	#read the clustering result from initial instances
 	FILE = open(decoded['Initial_Clustering_filename'],'rU')
 	Clustering = FILE.read()
@@ -311,6 +293,6 @@ def main():
 	return 0
 
 if __name__=="__main__":
-	jvm.start()
+	#jvm.start()
 	main()
-	jvm.stop()
+	#jvm.stop()

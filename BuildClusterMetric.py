@@ -7,6 +7,7 @@ import sys
 import math
 import json
 
+"""
 import weka.core.jvm as jvm
 from tools import read_dataset
 import traceback
@@ -16,20 +17,22 @@ from weka.classifiers import Classifier
 import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
+"""
 
 from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 import numpy as np
+from tools import read_dataset
 
 from tools import Convert2FloatArray
 
 def initialization(input_json_filename):
+	print input_json_filename
 	FILE = open(input_json_filename,'rU')
-	rawdata = FILE.read(input_json_filename)
+	rawdata = FILE.read()
 	decoded = json.loads(rawdata)
 	FILE.close()
-
 	return decoded
 
 def main(decoded):
@@ -46,18 +49,6 @@ def main(decoded):
 	if clustering[clustering.__len__()-1]:
 		clustering = clustering[:-1]
 	FILE.close()
-"""
-	for i in range(instance.__len__()):
-		for j in range(len(instance[i])):
-			if 'on' in instance[i][j]:
-				instance[i][j] = '1'
-			elif 'off' in instance[i][j]:
-				instance[i][j] = '0'
-			elif 'stand' in instance[i][j]:
-				instance[i][j] = '0.1'
-
-			instance[i][j] = float(instance[i][j])
-"""
 
 	instance = Convert2FloatArray(instance)
 
@@ -97,7 +88,10 @@ def main(decoded):
 	clustering_head_label = []
 	for i in range(clustering_head.__len__()):
 		clustering_head_label.append(i)
-"""	
+
+	return clustering_head, clustering_head_label
+
+"""
 	clf = svm.SVC(probability = True)
 	clf = tree.DecisionTreeClassifier()
 
@@ -121,7 +115,7 @@ def main(decoded):
 
 	print clf.predict_proba(test)
 """
-	return clustering_head, clustering_head_label
+	
 
 if __name__ == "__main__":
 	decoded = initialization(sys.argv[1])
