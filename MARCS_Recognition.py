@@ -26,6 +26,7 @@ import weka.core.types as types
 
 from sklearn import tree, svm, mixture
 from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
@@ -44,12 +45,21 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#clf = DPGMM(n_components = 13)
 	#clf = svm.LinearSVC(probability=True)
 	#clf = svm.NuSVC(probability=True)
+
 	Clustering_Metric = np.array(Clustering_Metric)
+	Clustering = np.array(Clustering)
+	Instance = np.array(Instance)
 	Clustering_Metric_Label = []
 	for i in range(Clustering_Metric.__len__()):
 		Clustering_Metric_Label.append(i)
 	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
+
+
+	clf = KNeighborsClassifier(n_neighbors = 10, weights= "distance")
+
 	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
+	
+	#clf = clf.fit(Instance, Clustering)
 	return clf
 
 """
