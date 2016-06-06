@@ -24,7 +24,14 @@ import weka.plot.graph as plot_graph
 import weka.core.types as types
 """
 
+import java.io.FileReader as FileReader
+import weka.core.Instances as Instances
+import weka.classifiers.Evaluation as Evaluation
+import weka.core.Range as Range
+import weka.classifiers.bayes.net.EditableBayesNet as DBN
+
 from sklearn import tree, svm, mixture
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
@@ -37,6 +44,14 @@ def ModelPossibilityDistribution(clf, instance):
 	return list(Distribution[0])
 
 def BuildClassifier(Instance, Clustering, Clustering_Metric):
+	# this part is degined for weka
+	# Bayes Network is implemented.
+	
+	return clf
+"""
+def BuildClassifier(Instance, Clustering, Clustering_Metric):
+	#this part is designed for scikt-learn
+
 	#clf = GaussianNB()
 	#clf = tree.DecisionTreeClassifier()
 	#clf = MultinomialNB()
@@ -54,13 +69,11 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 		Clustering_Metric_Label.append(i)
 	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
 
-
 	clf = KNeighborsClassifier(n_neighbors = 10, weights= "distance")
-
 	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
-	
-	#clf = clf.fit(Instance, Clustering)
+	clf = clf.fit(Instance, Clustering)
 	return clf
+"""
 
 """
 ----------------------------------------------
@@ -133,17 +146,6 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
 	AR_instance = Convert2FloatArray(AR_instance)
-	"""
-	for i in range(AR_instance.__len__()):
-		for j in range(len(AR_instance[i])):
-			if 'on' in AR_instance[i][j]:
-				AR_instance[i][j] = '1'
-			elif 'off' in AR_instance[i][j]:
-				AR_instance[i][j] = '0'
-			elif 'stand' in AR_instance[i][j]:
-				AR_instance[i][j] = '0.1'
-			AR_instance[i][j] = float(AR_instance[i][j])
-	"""
 	#read the semantic meaning from extrenal file
 	Semantic_Meaning = read_json(Semantic_filename)
 
