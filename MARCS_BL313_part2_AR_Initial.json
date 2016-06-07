@@ -1,0 +1,8 @@
+{
+	"log_filename":"BL313_part2_result/AR_Log_BL313_part2",
+	"WL_filename":"BL313_part2_result/WaitingList_Log_BL313_part2",
+	"Semantic_filename":"BL313_part2_result/Semantic_Meaning_Log_BL313_part2",
+	"Initial_Instance_filename":"dataset/BL313_part2/s_dataset_part2",
+	"Initial_Clustering_filename":"BL313_part2_result/cluster_BL313_part2_0.9_0",
+	"metric_filename":"BL313_part2_result/cluster_metric_BL313_part2_0.9_0"
+}
