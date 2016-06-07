@@ -1,7 +1,7 @@
 {
-	"log_filename":"AR_Log",
-	"WL_filename":"WaitingList_Log",
-	"Semantic_filename":"Semantic_Meaning_Log",
+	"log_filename":"BL313_full_result/AR_log_BL313_full",
+	"WL_filename":"BL313_full_result/WaitingList_Log_BL313_full",
+	"Semantic_filename":"BL313_full_result/Semantic_Meaning_Log_BL313_full",
 	"Initial_Instance_filename":"dataset/BL313_Dataset_201411/s_dataset",
 	"Initial_Clustering_filename":"BL313_full_result/cluster_BL313_full_0.9_0",
 	"metric_filename":"BL313_full_result/cluster_metric_BL313_full_0.9_0"

@@ -31,52 +31,6 @@ from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
 
-""""
-
-def read_dataset(File_Name, Split_Symbol):
-	f = open(File_Name)
-	data = f.read()
-	data = data.split('\n')
-	while len(data[data.__len__()-1]) == 0:
-		data = data[:-1]
-	for i in range(len(data)):
-		data[i] = data[i].split(Split_Symbol)
-	f.close()
-	return data
-
-def Convert2FloatArray(d):
-	array = 0
-	if type(d[0]) != type(list):
-		array = 2
-	else:
-		array = 1
-	print "d's array = ", array
-	if array == 1:
-		for i in range(len(d)):
-			if 'on' in d[i]:
-				d[i] = '1'
-			elif 'off' in d[i]:
-				d[i] = '0.1'
-			elif 'stand' in d[i]:
-				d[i] = '0'
-		print "start to convert to float"
-		d = [float(i) for i in d]
-		print 'start to convert to float...done...'
-	if array == 2:
-		for i in range(len(d)):
-			for j in range(len(d[i])):
-				if 'on' in d[i][j]:
-					d[i][j] = 1
-				elif 'off' in d[i][j]:
-					d[i][j] = 0.1
-				elif 'stand' in d[i][j]:
-					d[i][j] = 0
-		print "start to convert to float"
-		d = [[float(j) for j in i] for i in d]
-		print 'start to convert to float...done...'
-	return d
-
-"""
 """
 def ModelPossibilityDistribution(clf, instance):
 	# this part is designed for scikt-learn
@@ -91,6 +45,13 @@ def ModelPossibilityDistribution(clf, inst):
 	dist = clf.distribution_for_instance(inst)
 	return list(dist)
 
+def find_max(inst):
+	max_inst = int(inst[0])
+	for item in inst:
+		if max_inst < int(item):
+			max_inst = int(item)
+	return max_inst
+
 def ConvertInstance2ARFF(Instance, Clustering):
 
 	FILE = open('BL313_ARFF_header','rU')
@@ -101,16 +62,23 @@ def ConvertInstance2ARFF(Instance, Clustering):
 	Index = -1
 	FILE = open(Input_Path,'w')
 	FILE.write(BL313_ARFF_Header)
+	FILE.write('\n@ATTRIBUTE class {')
+	for i in range((find_max(Clustering))+1):
+		if i == 0:
+			FILE.write(str(i))
+		else:
+			FILE.write(','+str(i))
+	FILE.write('}\n@DATA')
 	for i in range(len(Instance)):
 		FILE.write('\n')
 		for j in range(len(Instance[i])):
 			FILE.write(str(Instance[i][j])+',')
-		FILE.write(Clustering[i])
+		FILE.write(str(Clustering[i]))
 	FILE.write('')
 	FILE.close()
 
 	loader = Loader(classname="weka.core.converters.ArffLoader")
-	data = loader.load_file(Input_File)
+	data = loader.load_file(Input_Path)
 	data.class_is_last()
 	"""
 	Input_File = FileReader(Input_Path)
@@ -160,10 +128,11 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 
 	loader = Loader( classname = "weka.core.converters.ArffLoader" )
 	data = ConvertInstance2ARFF(Instance, Clustering)
+	#data = ConvertInstance2ARFF(Clustering_Metric, Clustering_Metric_Label)
 	nb = Classifier( classname = "weka.classifiers.bayes.net.EditableBayesNet" )
 	nb.build_classifier(data)
 	
-	return clf
+	return nb
 
 """
 ----------------------------------------------
@@ -212,7 +181,10 @@ def PrintInstanceWL(instance, WL_filename):
 def read_json(filename):
 	FILE = open(filename,'rU')
 	rawdata = FILE.read()
-	decoded = json.loads(rawdata)
+	try:
+		decoded = json.loads(rawdata)
+	except:
+		decoded = {}
 	FILE.close()
 	return decoded
 
@@ -304,17 +276,7 @@ def Initialization(filename):
 	
 	Clustering_Metric = read_dataset(decoded['metric_filename'],'\t')
 	Clustering_Metric = Convert2FloatArray(Clustering_Metric)
-	"""
-	for i in range(Clustering_Metric.__len__()):
-		for j in range(len(Clustering_Metric[i])):
-			if 'on' in Clustering_Metric[i][j]:
-				Clustering_Metric[i][j] = '1'
-			elif 'off' in Clustering_Metric[i][j]:
-				Clustering_Metric[i][j] = '0'
-			elif 'stand' in Clustering_Metric[i][j]:
-				Clustering_Metric[i][j] = '0.1'
-			Clustering_Metric[i][j] = float(Clustering_Metric[i][j])
-	"""
+
 	return decoded["log_filename"], decoded["WL_filename"], decoded["Semantic_filename"], Instance , Clustering, Clustering_Metric
 
 """
@@ -396,6 +358,10 @@ def main():
 	return 0
 
 if __name__=="__main__":
-	#jvm.start()
-	main()
-	#jvm.stop()
+	try:
+		jvm.start()
+		main()
+	except Exception, e:
+		print(traceback.format_exc())
+	finally:
+		jvm.stop()
