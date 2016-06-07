@@ -12,7 +12,6 @@ import sys
 import math
 import json
 
-from tools import read_dataset, Convert2FloatArray
 import traceback
 
 """
@@ -30,6 +29,7 @@ import weka.classifiers.Evaluation as Evaluation
 import weka.core.Range as Range
 import weka.classifiers.bayes.net.EditableBayesNet as DBN
 
+"""
 from sklearn import tree, svm, mixture
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
@@ -37,17 +37,95 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
+"""
+
+def read_dataset(File_Name, Split_Symbol):
+	f = open(File_Name)
+	data = f.read()
+	data = data.split('\n')
+	while len(data[data.__len__()-1]) == 0:
+		data = data[:-1]
+	for i in range(len(data)):
+		data[i] = data[i].split(Split_Symbol)
+	f.close()
+	return data
+
+def Convert2FloatArray(d):
+	array = 0
+	if type(d[0]) != type(list):
+		array = 2
+	else:
+		array = 1
+	print "d's array = ", array
+	if array == 1:
+		for i in range(len(d)):
+			if 'on' in d[i]:
+				d[i] = '1'
+			elif 'off' in d[i]:
+				d[i] = '0.1'
+			elif 'stand' in d[i]:
+				d[i] = '0'
+		print "start to convert to float"
+		d = [float(i) for i in d]
+		print 'start to convert to float...done...'
+	if array == 2:
+		for i in range(len(d)):
+			for j in range(len(d[i])):
+				if 'on' in d[i][j]:
+					d[i][j] = 1
+				elif 'off' in d[i][j]:
+					d[i][j] = 0.1
+				elif 'stand' in d[i][j]:
+					d[i][j] = 0
+		print "start to convert to float"
+		d = [[float(j) for j in i] for i in d]
+		print 'start to convert to float...done...'
+	return d
+	
+def ModelPossibilityDistribution()
 
 def ModelPossibilityDistribution(clf, instance):
+	# this part is designed for scikt-learn
 	Distribution = clf.predict_proba(instance)
 	print Distribution[0]
 	return list(Distribution[0])
 
+def Load_Training_Data_ARFF(Instance, Clustering):
+	FILE = open('BL313_ARFF_header','rU')
+	BL313_ARFF_Header = FILE.read()
+	FILE.close()
+	Input_Path = "../MARCS_AR_temporary"
+	Index = -1
+	FILE = open(Input_Path,'w')
+	FILE.write(BL313_ARFF_Header)
+	for i in range(len(Instance)):
+		FILE.write('\n')
+		for j in range(len(Instance[i])):
+			FILE.write(str(Instance[i][j])+',')
+		FILE.write(Clustering[i])
+	FILE.write('')
+	FILE.close()
+	
+	Input_File = FileReader(Input_Path)
+	Training_Data = Instances(Input_File)
+	if Index == -1: #
+		Training_Data.setClassIndex(Training_Data.numAttributes() - 1)
+	else:
+		Training_Data.setClassIndex(Index)
+	return Training_Data
+	
+def Build_DBN_Model(Training_Data):
+	DBN_Model = DBN()
+	DBN_Model.buildClassifier(Training_Data)
+	return DBN_Model
+
 def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	# this part is degined for weka
 	# Bayes Network is implemented.
-	
-	return clf
+	training_data_arff = Load_Training_Data_ARFF(Instance, Clustering)
+	DBN_Classifier = Build_DBN_Model(training_data_arff)
+	print "Build Classifier...done..."
+	return DBN_Classifier
 """
 def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#this part is designed for scikt-learn
