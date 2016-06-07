@@ -14,22 +14,15 @@ import json
 
 import traceback
 
-"""
+from tools import read_dataset, Convert2FloatArray
+
 import weka.core.jvm as jvm
 from weka.core.converters import Loader
 from weka.classifiers import Classifier
 import weka.plot.classifiers as plot_cls
 import weka.plot.graph as plot_graph
 import weka.core.types as types
-"""
 
-import java.io.FileReader as FileReader
-import weka.core.Instances as Instances
-import weka.classifiers.Evaluation as Evaluation
-import weka.core.Range as Range
-import weka.classifiers.bayes.net.EditableBayesNet as DBN
-
-"""
 from sklearn import tree, svm, mixture
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
@@ -37,7 +30,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
-"""
+
+""""
 
 def read_dataset(File_Name, Split_Symbol):
 	f = open(File_Name)
@@ -81,19 +75,28 @@ def Convert2FloatArray(d):
 		d = [[float(j) for j in i] for i in d]
 		print 'start to convert to float...done...'
 	return d
-	
-def ModelPossibilityDistribution()
 
+"""
+"""
 def ModelPossibilityDistribution(clf, instance):
 	# this part is designed for scikt-learn
 	Distribution = clf.predict_proba(instance)
 	print Distribution[0]
 	return list(Distribution[0])
+"""
 
-def Load_Training_Data_ARFF(Instance, Clustering):
+def ModelPossibilityDistribution(clf, inst):
+	#	clf is classifier
+	#	inst is arff_instance
+	dist = clf.distribution_for_instance(inst)
+	return list(dist)
+
+def ConvertInstance2ARFF(Instance, Clustering):
+
 	FILE = open('BL313_ARFF_header','rU')
 	BL313_ARFF_Header = FILE.read()
 	FILE.close()
+
 	Input_Path = "../MARCS_AR_temporary"
 	Index = -1
 	FILE = open(Input_Path,'w')
@@ -105,15 +108,20 @@ def Load_Training_Data_ARFF(Instance, Clustering):
 		FILE.write(Clustering[i])
 	FILE.write('')
 	FILE.close()
-	
+
+	loader = Loader(classname="weka.core.converters.ArffLoader")
+	data = loader.load_file(Input_File)
+	data.class_is_last()
+	"""
 	Input_File = FileReader(Input_Path)
 	Training_Data = Instances(Input_File)
 	if Index == -1: #
 		Training_Data.setClassIndex(Training_Data.numAttributes() - 1)
 	else:
 		Training_Data.setClassIndex(Index)
-	return Training_Data
-	
+	"""
+	return data
+"""
 def Build_DBN_Model(Training_Data):
 	DBN_Model = DBN()
 	DBN_Model.buildClassifier(Training_Data)
@@ -122,14 +130,14 @@ def Build_DBN_Model(Training_Data):
 def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	# this part is degined for weka
 	# Bayes Network is implemented.
-	training_data_arff = Load_Training_Data_ARFF(Instance, Clustering)
+	Input_Path ,training_data_arff = Load_Training_Data_ARFF(Instance, Clustering)
 	DBN_Classifier = Build_DBN_Model(training_data_arff)
 	print "Build Classifier...done..."
 	return DBN_Classifier
 """
 def BuildClassifier(Instance, Clustering, Clustering_Metric):
-	#this part is designed for scikt-learn
 
+	#	the hidden part is designed for scikt-learn
 	#clf = GaussianNB()
 	#clf = tree.DecisionTreeClassifier()
 	#clf = MultinomialNB()
@@ -138,6 +146,9 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 	#clf = DPGMM(n_components = 13)
 	#clf = svm.LinearSVC(probability=True)
 	#clf = svm.NuSVC(probability=True)
+	#clf = KNeighborsClassifier(n_neighbors = 10, weights= "distance")
+	#clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
+	#clf = clf.fit(Instance, Clustering)
 
 	Clustering_Metric = np.array(Clustering_Metric)
 	Clustering = np.array(Clustering)
@@ -147,11 +158,12 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 		Clustering_Metric_Label.append(i)
 	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
 
-	clf = KNeighborsClassifier(n_neighbors = 10, weights= "distance")
-	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
-	clf = clf.fit(Instance, Clustering)
+	loader = Loader( classname = "weka.core.converters.ArffLoader" )
+	data = ConvertInstance2ARFF(Instance, Clustering)
+	nb = Classifier( classname = "weka.classifiers.bayes.net.EditableBayesNet" )
+	nb.build_classifier(data)
+	
 	return clf
-"""
 
 """
 ----------------------------------------------
@@ -163,7 +175,7 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 ----------------------------------------------
 """
 
-FamilarThreshold = 0.95
+FamilarThreshold = 0.9
 
 def isFamilarPattern(Distribution, Semantic_Meaning):
 	#not finished yet.
@@ -224,6 +236,7 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	#read the file from AR_filename
 	AR_instance = read_dataset(AR_filename,'\t')
 	AR_instance = Convert2FloatArray(AR_instance)
+	AR_instance_ARFF = ConvertInstance2ARFF(AR_instance, Clustering)
 	#read the semantic meaning from extrenal file
 	Semantic_Meaning = read_json(Semantic_filename)
 
@@ -232,13 +245,13 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	print "type of Semantic_Meaning = ", type(Semantic_Meaning)
 	is_unfamilar_pattern = -1
 	new_semantic_meaning = False
-	for i in range(len(AR_instance)):
-		Distribution = ModelPossibilityDistribution(clf, AR_instance[i])
+	for index, inst in enumerate(AR_instance_ARFF):
+		Distribution = ModelPossibilityDistribution(clf, inst)
 		is_familar_pattern = isFamilarPattern(Distribution, Semantic_Meaning)
 		print "is_familar_pattern = ", is_familar_pattern
 		if is_familar_pattern < 0:
 			print "Add a new instance into WaitingList..."
-			PrintInstanceWL(AR_instance[i],WL_filename)
+			PrintInstanceWL(AR_instance[index],WL_filename)
 		else:
 			if Semantic_Meaning.has_key((is_familar_pattern)) == True:
 				#find propable semantic meaning
