@@ -2,7 +2,7 @@
 	"dataset_filename":"dataset/BL313_part3/s_dataset_part3",
 	"eigenvalue_sum_threshold":0.9,
 	"Pinit":1,
-	"eigenvalue_filename":"BL313_part3_result/eigenvalue_BL313_part3_0.96_1",
-	"eigenvector_filename":"BL313_part3_result/eigenvector_BL313_part3_0.96_1",
-	"cluster_filename":"BL313_part3_result/cluster_BL313_part3_0.96_1"
+	"eigenvalue_filename":"BL313_part3_result/eigenvalue_BL313_part3_0.9_1",
+	"eigenvector_filename":"BL313_part3_result/eigenvector_BL313_part3_0.9_1",
+	"cluster_filename":"BL313_part3_result/cluster_BL313_part3_0.9_1"
 }
