@@ -1,5 +1,5 @@
 {
-	"clustering_filename":"BL313_part4_result/cluster_BL313_part4_0.9_1",
+	"clustering_filename":"BL313_part4_result/cluster_BL313_part4_0.99_0",
 	"dataset_filename":"dataset/BL313_part4/s_dataset_part4",
-	"metric_filename":"BL313_part4_result/cluster_metric_BL313_part4_0.90_1"
+	"metric_filename":"BL313_part4_result/cluster_metric_BL313_part4_0.99_0"
 }
