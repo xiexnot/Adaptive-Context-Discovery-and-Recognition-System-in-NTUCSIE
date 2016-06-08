@@ -31,20 +31,19 @@ from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.mixture import DPGMM, GMM, VBGMM
 import numpy as np
 
-"""
 def ModelPossibilityDistribution(clf, instance):
 	# this part is designed for scikt-learn
+	print "type(instance[0])" , type(instance[0])
 	Distribution = clf.predict_proba(instance)
 	print Distribution[0]
 	return list(Distribution[0])
 """
-
 def ModelPossibilityDistribution(clf, inst):
 	#	clf is classifier
 	#	inst is arff_instance
 	dist = clf.distribution_for_instance(inst)
 	return list(dist)
-
+"""
 def find_max(inst):
 	max_inst = int(inst[0])
 	for item in inst:
@@ -54,7 +53,7 @@ def find_max(inst):
 
 def ConvertInstance2ARFF(Instance, Clustering):
 
-	FILE = open('BL313_ARFF_header','rU')
+	FILE = open('BL313_ARFF_header_extracted','rU')
 	BL313_ARFF_Header = FILE.read()
 	FILE.close()
 
@@ -126,13 +125,17 @@ def BuildClassifier(Instance, Clustering, Clustering_Metric):
 		Clustering_Metric_Label.append(i)
 	Clustering_Metric_Label = np.array(Clustering_Metric_Label)
 
-	loader = Loader( classname = "weka.core.converters.ArffLoader" )
-	data = ConvertInstance2ARFF(Instance, Clustering)
+	#loader = Loader( classname = "weka.core.converters.ArffLoader" )
+	#data = ConvertInstance2ARFF(Instance, Clustering)
 	#data = ConvertInstance2ARFF(Clustering_Metric, Clustering_Metric_Label)
-	nb = Classifier( classname = "weka.classifiers.bayes.net.EditableBayesNet" )
-	nb.build_classifier(data)
-	
-	return nb
+	#nb = Classifier( classname = "weka.classifiers.bayes.net.EditableBayesNet" )
+	#nb.build_classifier(data)
+	#return nb
+
+	clf = GaussianNB()
+	clf = clf.fit(Clustering_Metric, Clustering_Metric_Label)
+	clf = clf.fit(Instance, Clustering)	
+	return clf
 
 """
 ----------------------------------------------
@@ -217,7 +220,8 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 	print "type of Semantic_Meaning = ", type(Semantic_Meaning)
 	is_unfamilar_pattern = -1
 	new_semantic_meaning = False
-	for index, inst in enumerate(AR_instance_ARFF):
+	#for index, inst in enumerate(AR_instance_ARFF):
+	for index, inst in enumerate(AR_instance):
 		Distribution = ModelPossibilityDistribution(clf, inst)
 		is_familar_pattern = isFamilarPattern(Distribution, Semantic_Meaning)
 		print "is_familar_pattern = ", is_familar_pattern
