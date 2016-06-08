@@ -1,0 +1,26 @@
+@RELATION BL313
+
+@ATTRIBUTE light_livingroom	integer
+@ATTRIBUTE audio_livingroom	integer
+@ATTRIBUTE current_watercoldfan_livingroom	REAL	
+@ATTRIBUTE current_TV_livingroom	REAL
+@ATTRIBUTE current_lamp_livingroom	REAL
+@ATTRIBUTE current_xbox_livingroom	REAL
+@ATTRIBUTE current_AC_livingroom 	REAL
+@ATTRIBUTE people_livingroom	integer
+@ATTRIBUTE light_study	integer
+@ATTRIBUTE current_lamp_study	REAL
+@ATTRIBUTE current_NB_study	REAL
+@ATTRIBUTE people_study	integer
+@ATTRIBUTE light_bedroom	integer
+@ATTRIBUTE current_lamp_bedroom 	REAL
+@ATTRIBUTE current_PC_bedroom	REAL
+@ATTRIBUTE current_AC_bedroom	REAL
+@ATTRIBUTE current_nightlamp_bedroom	REAL
+@ATTRIBUTE people_bedroom	integer
+@ATTRIBUTE light_kitchen	integer
+@ATTRIBUTE current_microwave_kitchen	REAL
+@ATTRIBUTE people_kitchen	integer
+@ATTRIBUTE light_hallway	integer
+@ATTRIBUTE switch_door_hallway	integer
+@ATTRIBUTE people_hallway	integer
