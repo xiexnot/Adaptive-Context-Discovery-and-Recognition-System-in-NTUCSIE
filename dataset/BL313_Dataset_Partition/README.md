@@ -16,9 +16,7 @@ Appliance:
 
 Motion: 
 
-
-
 ### Hints
 
-
-
+Environment Dataset has been separated. However, this kind of features has not contribution to clustering in BL313
+So in the hierarchical discovery, recognition and interactive adaptation (my master thesis), environment features will not be updated and considered.
