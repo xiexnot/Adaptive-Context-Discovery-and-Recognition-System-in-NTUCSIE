@@ -24,26 +24,38 @@ def Convert2FloatArray(d):
 	if array == 1:
 		for i in range(len(d)):
 			if 'on' in d[i]:
-				d[i] = '1'
+				d[i] = 1
 			elif 'off' in d[i]:
-				d[i] = '0.1'
+				d[i] = 0
 			elif 'stand' in d[i]:
-				d[i] = '0'
+				d[i] = 0.1
 		print "start to convert to float"
 		d = [float(i) for i in d]
 		print 'start to convert to float...done...'
 
 	if array == 2:
 		for i in range(len(d)):
+			if d[i][len(d[i])-1] == '\r':
+				d[i] = d[i][:-1]
 			for j in range(len(d[i])):
 				if 'on' in d[i][j]:
 					d[i][j] = 1
 				elif 'off' in d[i][j]:
-					d[i][j] = 0.1
-				elif 'stand' in d[i][j]:
 					d[i][j] = 0
+				elif 'stand' in d[i][j]:
+					d[i][j] = 0.1
 		print "start to convert to float"
-		d = [[float(j) for j in i] for i in d]
+		print d[0]
+		#d = [[float(j) for j in i] for i in d]
+
+		for i in range(len(d)):
+			for j in range(len(d[i])):
+				try:
+					d[i][j] = float(d[i][j])
+				except:
+					print i," ",j
+					while (1):
+						pass
 		print 'start to convert to float...done...'
 
 	return d
@@ -61,13 +73,16 @@ def entropy(Alphabet):
 	return H
 
 def read_dataset(File_Name, Split_Symbol):
-	f = open(File_Name)
+	f = open(File_Name,'rU')
 	data = f.read()
 	data = data.split('\n')
 	while len(data[data.__len__()-1]) == 0:
 		data = data[:-1]
 	for i in range(len(data)):
 		data[i] = data[i].split(Split_Symbol)
+		if data[i][len(data[i])-1] == '':
+			data[i] = data[i][:-1]
+	print "data[0]=",data[0]
 	f.close()
 	return data
 
