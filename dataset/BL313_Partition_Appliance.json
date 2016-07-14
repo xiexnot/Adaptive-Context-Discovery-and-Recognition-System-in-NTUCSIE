@@ -1,0 +1,8 @@
+{
+	"dataset_filename":"dataset/BL313_Dataset_Partition/s_dataset_Appliance",
+	"eigenvalue_sum_threshold":0.9,
+	"Pinit":0,
+	"eigenvalue_filename":"BL313_Partition_result/eigenvalue_BL313_Partition_Appliance",
+	"eigenvector_filename":"BL313_Partition_result/eigenvector_BL313_Partition_Appliance",
+	"cluster_filename":"BL313_Partition_result/cluster_BL313_Partition_Appliance"
+}
