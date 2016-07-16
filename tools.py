@@ -12,15 +12,8 @@ from AP import *
 ----------------------------------------------
 """
 	
-def Convert2FloatArray(d):
-	array = 0
-
-	if type(d[0]) != type(list):
-		array = 2
-	else:
-		array = 1
-	print "d's array = ", array
-
+def Convert2FloatArray(d, array):
+	print "start to convert to float"
 	if array == 1:
 		for i in range(len(d)):
 			if 'on' in d[i]:
@@ -29,10 +22,8 @@ def Convert2FloatArray(d):
 				d[i] = 0
 			elif 'stand' in d[i]:
 				d[i] = 0.1
-		print "start to convert to float"
 		d = [float(i) for i in d]
-		print 'start to convert to float...done...'
-
+		
 	if array == 2:
 		for i in range(len(d)):
 			if d[i][len(d[i])-1] == '\r':
@@ -44,20 +35,9 @@ def Convert2FloatArray(d):
 					d[i][j] = 0
 				elif 'stand' in d[i][j]:
 					d[i][j] = 0.1
-		print "start to convert to float"
-		print d[0]
-		#d = [[float(j) for j in i] for i in d]
-
-		for i in range(len(d)):
-			for j in range(len(d[i])):
-				try:
-					d[i][j] = float(d[i][j])
-				except:
-					print i," ",j
-					while (1):
-						pass
-		print 'start to convert to float...done...'
-
+		d = [[float(j) for j in i] for i in d]
+		
+	print 'start to convert to float...done...'
 	return d
 
 
@@ -76,15 +56,18 @@ def read_dataset(File_Name, Split_Symbol):
 	f = open(File_Name,'rU')
 	data = f.read()
 	data = data.split('\n')
-	while len(data[data.__len__()-1]) == 0:
-		data = data[:-1]
+	line = data.__len__()
+	if line != 1:
+		while len(data[data.__len__()-1]) == 0:
+			data = data[:-1]
+			line -= 1
 	for i in range(len(data)):
 		data[i] = data[i].split(Split_Symbol)
 		if data[i][len(data[i])-1] == '':
 			data[i] = data[i][:-1]
-	print "data[0]=",data[0]
+	#print "data[0]=",data[0]
 	f.close()
-	return data
+	return data, line
 
 def median(Q):
 	Q = sorted(Q)

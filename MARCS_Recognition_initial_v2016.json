@@ -1,0 +1,21 @@
+{
+	"log_filename":"BL313_Partition_result/Recognition_log",
+	"WL_filename":"BL313_Partition_result/WaitingList_Dict",
+	"Semantic_filename":"BL313_Partition_result/Semantic_Meaning_Dict",
+	"Initial_Instance_filename":"dataset/BL313_Dataset_201411/s_dataset",
+	"Initial_Clustering_filename":"BL313_full_result/cluster_BL313_full_0.9_0",
+	"feature_filename":"dataset/BL313_Dataset_201411/s_dataset_feature",
+	"sub":
+	[
+		{
+			"feature_filename":"dataset/BL313_Dataset_Partition/s_dataset_Motion_feature",
+			"clustering_filename":"BL313_Partition_result/cluster_BL313_Partition_Motion",
+			"instance_filename":"dataset/BL313_Dataset_Partition/s_dataset_Motion"
+		},
+		{
+			"feature_filename":"dataset/BL313_Dataset_Partition/s_dataset_Appliance_feature",
+			"clustering_filename":"BL313_Partition_result/cluster_BL313_Partition_Appliance",
+			"instance_filename":"dataset/BL313_Dataset_Partition/s_dataset_Appliance"
+		}
+	]
+}
