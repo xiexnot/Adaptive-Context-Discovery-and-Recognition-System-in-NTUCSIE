@@ -1,0 +1,9 @@
+{
+	"dataset_filename":"dataset/BL313_Dataset_Partition/s_dataset_Appliance",
+	"clustering_filename":"BL313_Partition_result/cluster_BL313_Partition_Appliance",
+	"label_filename":"dataset/BL313_Dataset_201411/s_dataset_label(manual)",
+	"log_filename":"BL313_Recognition(MT_Version)/log",
+	"target_dataset_filename":"",
+	"target_clustering_filename":"",
+	"target_label":["WatchingTV"]
+}

@@ -1,6 +1,21 @@
 from math import log
 from collections import Counter
 from AP import *
+import json
+
+#----------------------------------------------
+#	read_json
+#	Description:	read json data from external file
+#----------------------------------------------
+
+def read_json(filename):
+	FILE = open(filename,'rU')
+	rawdata = FILE.read()
+	
+	decoded = json.loads(rawdata)
+	
+	FILE.close()
+	return decoded
 
 #----------------------------------------------
 #	find_max / find_min
@@ -21,6 +36,17 @@ def find_min(X):
 			result = X[i]
 	return result
 
+#----------------------------------------------
+#	Read Clustering
+#	Description:	read clustering results from external file
+#----------------------------------------------
+
+def read_label(filename):
+	FILE = open(filename,"rU")
+	label = FILE.read()
+	label = label.split('\n')
+	FILE.close()
+	return label
 #----------------------------------------------
 #	Read Clustering
 #	Description:	read clustering results from external file
@@ -83,8 +109,8 @@ def Convert2FloatArray(d, array):
 		
 	if array == 2:
 		for i in range(len(d)):
-			if d[i][len(d[i])-1] == '\r':
-				d[i] = d[i][:-1]
+			#if d[i][len(d[i])-1] == '\r':
+			#	d[i] = d[i][:-1]
 			for j in range(len(d[i])):
 				if 'on' in d[i][j]:
 					d[i][j] = 1
@@ -120,11 +146,11 @@ def read_dataset(File_Name, Split_Symbol):
 			line -= 1
 	for i in range(len(data)):
 		data[i] = data[i].split(Split_Symbol)
-		if data[i][len(data[i])-1] == '':
-			data[i] = data[i][:-1]
+	#	if data[i][len(data[i])-1] == '':
+	#		data[i] = data[i][:-1]
 	#print "data[0]=",data[0]
 	f.close()
-	return data, line
+	return data
 
 def median(Q):
 	Q = sorted(Q)

@@ -107,21 +107,6 @@ def ActivityRecognition(AR_filename, WL_filename, Semantic_filename, Instance, C
 """
 
 #----------------------------------------------
-#	read_json
-#	Description:	read json data from external file
-#----------------------------------------------
-
-def read_json(filename):
-	FILE = open(filename,'rU')
-	rawdata = FILE.read()
-	try:
-		decoded = json.loads(rawdata)
-	except:
-		decoded = {}
-	FILE.close()
-	return decoded
-
-#----------------------------------------------
 #	Novelty Detecting
 #	Description: Detect the potential novelty by using ND Classifier
 #----------------------------------------------
