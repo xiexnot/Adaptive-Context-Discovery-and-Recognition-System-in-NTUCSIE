@@ -2,6 +2,63 @@ from math import log
 from collections import Counter
 from AP import *
 
+#----------------------------------------------
+#	find_max / find_min
+#	Description: find the max/min value in array.
+#----------------------------------------------
+
+def find_max(X):
+	result = X[0]
+	for i in range(X.__len__()):
+		if result < X[i]:
+			result = X[i]
+	return result
+
+def find_min(X):
+	result = X[0] 
+	for i in range(X.__len__()):
+		if result > X[i]:
+			result = X[i]
+	return result
+
+#----------------------------------------------
+#	Read Clustering
+#	Description:	read clustering results from external file
+#----------------------------------------------
+
+def read_clustering(filename):
+	FILE = open(filename,'rU')
+	clustering = FILE.read()
+	clustering = clustering.split("\n")
+	if clustering[clustering.__len__()-1] == "":
+		clustering = clustering[:-1]
+	FILE.close()
+	for i in range(clustering.__len__()):
+		clustering[i] = int(clustering[i])
+	return clustering
+
+#----------------------------------------------
+#	Read Feature
+#	Description:	read feature information from external file
+#	Hints:	Feature file's format
+#	<Index Number for total>	<Feature Name>
+#	<Index Number for total>	<Feature Name>
+#	<Index Number for total>	<Feature Name>....
+#----------------------------------------------
+
+def read_feature(filename):
+	FILE = open(filename,'rU')
+	feature = FILE.read()
+	feature = feature.split('\n')
+	FILE.close()
+	if (feature[feature.__len__()-1])=="":
+		feature = feature[:-1]
+	for i in range(feature.__len__()):
+		feature[i] = feature[i].split("\t")
+		feature[i][0] = int(feature[i][0])
+	return feature
+
+
 """
 ----------------------------------------------
 	ConvertDataFormat
