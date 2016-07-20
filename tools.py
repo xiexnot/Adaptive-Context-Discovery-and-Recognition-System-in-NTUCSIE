@@ -118,6 +118,13 @@ def Convert2FloatArray(d, array):
 					d[i][j] = 0
 				elif 'stand' in d[i][j]:
 					d[i][j] = 0.1
+		for i in range(d.__len__()):
+			for j in range(len(d[i])):
+				try:
+					d[i][j] = float(d[i][j])
+				except:
+					pass
+					print i," ",j
 		d = [[float(j) for j in i] for i in d]
 		
 	print 'start to convert to float...done...'
@@ -146,9 +153,9 @@ def read_dataset(File_Name, Split_Symbol):
 			line -= 1
 	for i in range(len(data)):
 		data[i] = data[i].split(Split_Symbol)
-	#	if data[i][len(data[i])-1] == '':
-	#		data[i] = data[i][:-1]
-	#print "data[0]=",data[0]
+		if data[i][len(data[i])-1] == '':
+			data[i] = data[i][:-1]
+	print "data[0]=",data[0]
 	f.close()
 	return data
 

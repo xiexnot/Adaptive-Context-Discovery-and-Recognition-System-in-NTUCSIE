@@ -1,0 +1,8 @@
+{
+	"dataset_filename":"dataset/BL313_Dataset_Partition_noTV/s_dataset_Partition_noTV",
+	"eigenvalue_sum_threshold":0.95,
+	"Pinit":0,
+	"eigenvalue_filename":"BL313_Recognition(MT_Version)/eigenvalue_BL313_Partition_noTV",
+	"eigenvector_filename":"BL313_Recognition(MT_Version)/eigenvector_BL313_Partition_noTV",
+	"cluster_filename":"BL313_Recognition(MT_Version)/cluster_BL313_Partition_noTV"
+}

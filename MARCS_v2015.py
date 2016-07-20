@@ -201,7 +201,7 @@ def main(decoded):
 	print "start read dataset"
 	d = read_dataset(dataset_filename,'\t')
 	print "end of read_dataset"
-	d = Convert2FloatArray(d)
+	d = Convert2FloatArray(d,2)
 	d = DatasetNormalization(d)
 
 	d_eigenvalue, d_eigenvector, d_eigenvalue_total = DimensionalityReduction(d, eigenvalue_filename, eigenvector_filename)

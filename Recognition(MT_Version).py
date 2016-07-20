@@ -114,9 +114,10 @@ def main():
 	FILE = open(decoded["log_filename"],"w")
 	for i in range(Recognition_Log.__len__()):
 		FILE.write(Recognition_Log[i][0])
-		FILE.write('\t')
-		FILE.write(Recognition_Log[i][1])
+		#FILE.write('\t')
+		#FILE.write(Recognition_Log[i][1])
 		FILE.write('\n')
+		"""
 		if Recognition_Log[i][0] == 'novelty' and Recognition_Log[i][1] == 'novelty':
 			TP += 1
 		if Recognition_Log[i][0] == 'novelty' and Recognition_Log[i][1] == 'existing':
@@ -125,13 +126,13 @@ def main():
 			FP += 1
 		if Recognition_Log[i][0] == 'existing' and Recognition_Log[i][1] == 'existing':
 			TN += 1
+		"""
+	#print [TP,FP,TN,FN]
 
-	print [TP,FP,TN,FN]
-
-	FILE.write('TP = '+str(TP)+'\n')
-	FILE.write('FP = '+str(FP)+'\n')
-	FILE.write('TN = '+str(TN)+'\n')
-	FILE.write('FN = '+str(FN)+'\n')
+	#FILE.write('TP = '+str(TP)+'\n')
+	#FILE.write('FP = '+str(FP)+'\n')
+	#FILE.write('TN = '+str(TN)+'\n')
+	#FILE.write('FN = '+str(FN)+'\n')
 
 	FILE.close()
 
